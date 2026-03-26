@@ -1,0 +1,20 @@
+{
+  "Dashboard": {
+    "title": "সুপ্রভাত",
+    "ready": "দিন {day} জয় করতে প্রস্তুত?",
+    "coach_says": "কোচ ক্লদ বলেছেন:",
+    "todays_protocol": "আজকের প্রোটোকল",
+    "view_plan": "পরিকল্পনা দেখুন",
+    "exercises": "{count} ব্যায়াম",
+    "mins": "{duration} মিনিট",
+    "start_session": "সেশন শুরু করুন",
+    "nutrition": "পুষ্টি",
+    "log_meal": "খাবার লগ করুন",
+    "loading": "আপনার ওয়ার্কআউট লোড হচ্ছে...",
+    "rest_day": "বিশ্ব্রামের দিন",
+    "protein": "প্রোটিন",
+    "carbs": "শর্করা",
+    "fat": "চর্বি",
+    "daily_habits": "দৈনন্দিন অভ্যাস"
+  }
+}

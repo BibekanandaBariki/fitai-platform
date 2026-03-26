@@ -1,0 +1,20 @@
+{
+  "Dashboard": {
+    "title": "Good morning",
+    "ready": "Ready to crush Day {day}?",
+    "coach_says": "Coach Claude says:",
+    "todays_protocol": "Today's Protocol",
+    "view_plan": "View Plan",
+    "exercises": "{count} exercises",
+    "mins": "{duration} mins",
+    "start_session": "Start Session",
+    "nutrition": "Nutrition",
+    "log_meal": "Log Meal",
+    "loading": "Loading your workout...",
+    "rest_day": "Rest Day",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "daily_habits": "Daily Habits"
+  }
+}

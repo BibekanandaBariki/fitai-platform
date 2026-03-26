@@ -1,0 +1,20 @@
+{
+  "Dashboard": {
+    "title": "सुप्रभात",
+    "ready": "क्या आप दिन {day} को शानदार बनाने के लिए तैयार हैं?",
+    "coach_says": "कोच क्लॉड कहते हैं:",
+    "todays_protocol": "आज का प्रोटोकॉल",
+    "view_plan": "योजना देखें",
+    "exercises": "{count} व्यायाम",
+    "mins": "{duration} मिनट",
+    "start_session": "सत्र शुरू करें",
+    "nutrition": "पोषण",
+    "log_meal": "भोजन लॉग करें",
+    "loading": "आपका वर्कआउट लोड हो रहा है...",
+    "rest_day": "आराम का दिन",
+    "protein": "प्रोटीन",
+    "carbs": "कार्ब्स",
+    "fat": "फैट",
+    "daily_habits": "दैनिक आदतें"
+  }
+}
