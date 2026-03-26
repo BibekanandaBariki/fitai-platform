@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+
+  # ────────────────────────────────────────
+  # PostgreSQL — Local database for Drizzle
+  # ────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: fitai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fitai
+      POSTGRES_USER: fitai_user
+      POSTGRES_PASSWORD: fitai_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fitai_user -d fitai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ────────────────────────────────────────
+  # Redis — For BullMQ job queues
+  # ────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: fitai-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ────────────────────────────────────────
+  # ML Microservice — FastAPI Python
+  # ────────────────────────────────────────
+  ml:
+    build:
+      context: ./services/ml
+      dockerfile: Dockerfile
+    container_name: fitai-ml
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
