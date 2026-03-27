@@ -8,13 +8,21 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/dashboard'
+  
+  // 1. Check if Supabase passed an auth provider error (e.g. invalid Google keys)
+  const oauthError = searchParams.get('error_description') || searchParams.get('error')
+  if (oauthError) {
+    console.error("OAuth Provider Error:", oauthError);
+    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(oauthError)}`)
+  }
 
+  // 2. PKCE Flow (Secure Server-side code exchange)
   if (code) {
     const supabase = await createClient()
     const { data: authData, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
-      console.error("Supabase Auth Code Exchange Error:", error);
+      console.error("Supabase PKCE Code Exchange Error:", error.message);
       return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`)
     }
 
@@ -41,6 +49,7 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}/onboarding/step-1`)
       }
 
+      // Safe domain redirect
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
       
@@ -54,6 +63,10 @@ export async function GET(request: Request) {
     }
   }
 
-  // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/login?error=auth-code-error`)
+  // 3. Implicit Grant Flow Fallback (Hash fragment token)
+  // If PKCE is disabled in Supabase, the URL contains `#access_token=...`
+  // The server cannot read hash fragments, but the browser can!
+  // By redirecting back to the app, the `@supabase/ssr` browser client will 
+  // slurp the token and sign them in automatically on the client side.
+  return NextResponse.redirect(`${origin}/onboarding/step-1`)
 }
