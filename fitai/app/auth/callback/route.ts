@@ -41,12 +41,12 @@ export async function GET(request: Request) {
         })
 
         // Un-onboarded users go straight to step-1
-        return NextResponse.redirect(`${origin}/onboarding/step-1`)
+        return NextResponse.redirect(`${origin}/step-1`)
       }
 
       // Check if partially onboarded
       if (!existingUser[0].isOnboarded) {
-        return NextResponse.redirect(`${origin}/onboarding/step-1`)
+        return NextResponse.redirect(`${origin}/step-1`)
       }
 
       // Safe domain redirect
@@ -68,5 +68,5 @@ export async function GET(request: Request) {
   // The server cannot read hash fragments, but the browser can!
   // By redirecting back to the app, the `@supabase/ssr` browser client will 
   // slurp the token and sign them in automatically on the client side.
-  return NextResponse.redirect(`${origin}/onboarding/step-1`)
+  return NextResponse.redirect(`${origin}/step-1`)
 }
