@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Activity, Mail, Smartphone, ArrowRight, Loader2 } from "lucide-react";
+import { Activity, Mail, Smartphone, ArrowRight, Loader2, Fingerprint } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -110,6 +110,25 @@ export default function LoginPage() {
                                 >
                                     <Mail className="mr-3 h-5 w-5" />
                                     Use Email Link
+                                </Button>
+
+                                <div className="relative py-2">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <span className="w-full border-t border-border" />
+                                    </div>
+                                    <div className="relative flex justify-center text-xs uppercase">
+                                        <span className="bg-card px-2 text-muted-foreground">Or</span>
+                                    </div>
+                                </div>
+
+                                <Button
+                                    size="lg"
+                                    variant="outline"
+                                    className="w-full h-14 text-base font-medium flex items-center justify-center gap-2 hover:bg-muted border-primary/20 text-primary"
+                                    onClick={() => alert("WebAuthn / Passkey flow initiated...")}
+                                >
+                                    <Fingerprint className="w-5 h-5 text-green-500" />
+                                    Login with Passkey / Face ID
                                 </Button>
 
                             </motion.div>

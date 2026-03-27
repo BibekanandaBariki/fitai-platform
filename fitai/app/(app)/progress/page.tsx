@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, ResponsiveContainer, YAxis, Tooltip } from "recharts";
-import { TrendingUp, Camera, History, Crown, Plus, Calendar, Scaling } from "lucide-react";
+import { TrendingUp, Camera, History, Crown, Plus, Calendar, Scaling, Download, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 
 const WEIGHT_DATA = [
     { date: "Oct 1", weight: 78.5 },
@@ -26,6 +28,26 @@ const RECORDS = [
 
 export default function ProgressPage() {
     const [activeTab, setActiveTab] = useState<"overview" | "photos" | "history">("overview");
+    const [isExporting, setIsExporting] = useState(false);
+
+    const exportPDF = async () => {
+        setIsExporting(true);
+        const element = document.getElementById('progress-report');
+        if (element) {
+            try {
+                const canvas = await html2canvas(element, { backgroundColor: '#09090b', scale: 2 });
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save('FitAI_Progress_Report.pdf');
+            } catch (err) {
+                console.error("PDF Export failed", err);
+            }
+        }
+        setIsExporting(false);
+    };
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-8">
@@ -36,6 +58,10 @@ export default function ProgressPage() {
                     <h1 className="text-3xl font-heading font-bold tracking-tight">Progress</h1>
                     <p className="text-muted-foreground">You've lost 3.1kg this month! 🎉</p>
                 </div>
+                <Button variant="outline" size="sm" onClick={exportPDF} disabled={isExporting}>
+                    {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+                    Export PDF
+                </Button>
             </div>
 
             {/* Tabs */}
@@ -74,6 +100,7 @@ export default function ProgressPage() {
                 {/* Overview Tab (Charts & PRs) */}
                 {activeTab === "overview" && (
                     <motion.div
+                        id="progress-report"
                         key="overview"
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
