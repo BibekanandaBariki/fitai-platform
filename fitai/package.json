@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "worker": "tsx lib/queue/worker.ts",
-    "build": "next build",
+    "db:push": "drizzle-kit push",
+    "db:seed": "tsx db/seed_foods.ts",
+    "build": "drizzle-kit push && next build",
     "start": "next start",
     "lint": "eslint"
   },
