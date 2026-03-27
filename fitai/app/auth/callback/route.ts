@@ -13,6 +13,11 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { data: authData, error } = await supabase.auth.exchangeCodeForSession(code)
 
+    if (error) {
+      console.error("Supabase Auth Code Exchange Error:", error);
+      return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`)
+    }
+
     if (!error && authData?.user) {
       const user = authData.user;
       
