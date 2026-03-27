@@ -7,7 +7,7 @@
     "worker": "tsx lib/queue/worker.ts",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx db/seed_foods.ts",
-    "build": "drizzle-kit push && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
