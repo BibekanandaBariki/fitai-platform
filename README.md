@@ -80,3 +80,5 @@ docker-compose up -d
 
 ## 📄 License
 MIT License. Created by Bibekananda Bariki.
+
+Note: Local environment variables are strictly ignored by Git for security.
