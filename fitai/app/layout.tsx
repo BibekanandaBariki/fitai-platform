@@ -29,6 +29,7 @@ export const metadata: Metadata = {
 import { TRPCProvider } from "@/lib/trpc/Provider";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
+import { URLSanitizer } from "@/components/shared/URLSanitizer";
 
 export default async function RootLayout({
   children,
@@ -45,6 +46,7 @@ export default async function RootLayout({
         inter.variable,
         sora.variable
       )}>
+        <URLSanitizer />
         <NextIntlClientProvider messages={messages}>
           <TRPCProvider>
             {children}
