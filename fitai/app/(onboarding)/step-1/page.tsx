@@ -22,7 +22,7 @@ export default function OnboardingStep1() {
 
     const handleNext = () => {
         if (primaryGoal) {
-            router.push("/onboarding/step-2");
+            router.push("/step-2");
         }
     };
 
@@ -94,7 +94,7 @@ export default function OnboardingStep1() {
             {/* Floating Bottom Bar */}
             <div className="fixed bottom-0 left-0 w-full p-4 bg-background/80 backdrop-blur-md border-t">
                 <div className="container mx-auto max-w-2xl flex justify-between items-center">
-                    <Button variant="ghost" onClick={() => router.push("/onboarding/step-2")} className="text-muted-foreground">
+                    <Button variant="ghost" onClick={() => router.push("/step-2")} className="text-muted-foreground">
                         Skip
                     </Button>
                     <Button

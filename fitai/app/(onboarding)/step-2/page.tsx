@@ -15,7 +15,7 @@ export default function OnboardingStep2() {
 
     const handleNext = () => {
         if (height && weight && targetWeight) {
-            router.push("/onboarding/step-3");
+            router.push("/step-3");
         }
     };
 
@@ -31,7 +31,7 @@ export default function OnboardingStep2() {
             </div>
 
             <div className="container mx-auto flex h-16 items-center px-4 mt-2">
-                <Button variant="ghost" size="icon" onClick={() => router.push("/onboarding/step-1")}>
+                <Button variant="ghost" size="icon" onClick={() => router.push("/step-1")}>
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
                 <span className="ml-auto text-sm font-medium text-muted-foreground mr-2">2 of 7</span>
@@ -133,7 +133,7 @@ export default function OnboardingStep2() {
 
             <div className="fixed bottom-0 left-0 w-full p-4 bg-background/80 backdrop-blur-md border-t">
                 <div className="container mx-auto max-w-2xl flex justify-between items-center">
-                    <Button variant="ghost" onClick={() => router.push("/onboarding/step-3")} className="text-muted-foreground">
+                    <Button variant="ghost" onClick={() => router.push("/step-3")} className="text-muted-foreground">
                         Skip
                     </Button>
                     <Button

@@ -81,7 +81,7 @@ export default function OnboardingStep7() {
 
             <div className="container mx-auto flex h-16 items-center px-4 mt-2">
                 {!isFinishing && (
-                    <Button variant="ghost" size="icon" onClick={() => router.push("/onboarding/step-6")}>
+                    <Button variant="ghost" size="icon" onClick={() => router.push("/step-6")}>
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
                 )}

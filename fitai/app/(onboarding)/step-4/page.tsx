@@ -39,7 +39,7 @@ export default function OnboardingStep4() {
     const handleNext = () => {
         // Require at least one selection in each (even if it's "None")
         if (conditions.length > 0 && injuries.length > 0) {
-            router.push("/onboarding/step-5");
+            router.push("/step-5");
         }
     };
 
@@ -55,7 +55,7 @@ export default function OnboardingStep4() {
             </div>
 
             <div className="container mx-auto flex h-16 items-center px-4 mt-2">
-                <Button variant="ghost" size="icon" onClick={() => router.push("/onboarding/step-3")}>
+                <Button variant="ghost" size="icon" onClick={() => router.push("/step-3")}>
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
                 <span className="ml-auto text-sm font-medium text-muted-foreground mr-2">4 of 7</span>
@@ -141,7 +141,7 @@ export default function OnboardingStep4() {
 
             <div className="fixed bottom-0 left-0 w-full p-4 bg-background/80 backdrop-blur-md border-t">
                 <div className="container mx-auto max-w-2xl flex justify-between items-center">
-                    <Button variant="ghost" onClick={() => router.push("/onboarding/step-5")} className="text-muted-foreground">
+                    <Button variant="ghost" onClick={() => router.push("/step-5")} className="text-muted-foreground">
                         Skip
                     </Button>
                     <Button
