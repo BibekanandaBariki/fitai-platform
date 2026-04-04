@@ -9,13 +9,7 @@ import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@supabase/ssr";
 import { trpc } from "@/lib/trpc/client";
 
-const LEADERBOARD = [
-    { rank: 1, name: "Rahul S.",  xp: 12450, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul",  isMe: false },
-    { rank: 2, name: "Priya M.",  xp: 11200, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",  isMe: false },
-    { rank: 3, name: "You",       xp: 0,     avatar: "",                                                        isMe: true  },
-    { rank: 4, name: "Vikram K.", xp: 9400,  avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vikram", isMe: false },
-    { rank: 5, name: "Sneha R.",  xp: 8900,  avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha",  isMe: false },
-];
+
 
 const BADGES = [
     { id: 1, name: "First Step",  desc: "Complete 1st workout",   icon: Star,   unlocked: true  },
@@ -43,6 +37,7 @@ function calcLevel(xp: number) {
 export default function CommunityPage() {
     const [authUser, setAuthUser] = useState<{ user_metadata?: Record<string, string>; email?: string } | null>(null);
     const { data: profileData }   = trpc.profile.get.useQuery();
+    const { data: globalLeaderboard } = trpc.profile.getLeaderboard.useQuery();
 
     useEffect(() => {
         const supabase = createBrowserClient(
@@ -78,10 +73,10 @@ export default function CommunityPage() {
         return Math.floor((now - new Date(journeyStart).getTime()) / 86_400_000) + 1;
     }, [journeyStart, now]);
 
-    // Inject live data into the "isMe" row
-    const leaderboard = LEADERBOARD.map((row) =>
-        row.isMe ? { ...row, name: `${name} (You)`, xp, avatar } : row
-    ).sort((a, b) => b.xp - a.xp).map((r, i) => ({ ...r, rank: i + 1 }));
+    // Inject dynamic leaderboard data
+    const leaderboard = (globalLeaderboard || []).map((row) =>
+        row.isMe ? { ...row, name: `${row.name} (You)` } : row
+    );
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-8">

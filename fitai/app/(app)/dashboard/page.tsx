@@ -76,7 +76,9 @@ export default function DashboardPage() {
             <section>
                 <div className="flex items-center justify-between mb-3">
                     <h2 className="text-lg font-heading font-semibold">{t('todays_protocol')}</h2>
-                    <Button variant="ghost" size="sm" className="h-8 text-xs text-primary">{t('view_plan')}</Button>
+                    <Link href="/workout">
+                        <Button variant="ghost" size="sm" className="h-8 text-xs text-primary">{t('view_plan')}</Button>
+                    </Link>
                 </div>
                 
                 {isLoading ? (

@@ -97,4 +97,43 @@ export const profileRouter = createTRPCRouter({
 
     return { success: true };
   }),
+  // Get global leaderboard
+  getLeaderboard: protectedProcedure.query(async ({ ctx }) => {
+    // Get all users who have started a journey
+    // Notice: userProfiles has fullName, users has email and journeyStartedAt
+    // It's easier to just pull users and left join userProfiles for names
+    const allUsers = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        journeyStartedAt: users.journeyStartedAt,
+        fullName: userProfiles.fullName,
+        avatar: userProfiles.profilePhotoUrl,
+      })
+      .from(users)
+      .leftJoin(userProfiles, eq(userProfiles.userId, users.id));
+
+    // Calculate XP for each
+    const now = Date.now();
+    const leaderboard = allUsers
+      .filter((u) => u.journeyStartedAt) // only users who started
+      .map((u) => {
+        const started = new Date(u.journeyStartedAt!).getTime();
+        const days = Math.floor((now - started) / 86_400_000);
+        const xp = days * 100 + 500;
+        
+        let initialName = u.fullName?.split(" ")[0] || u.email?.split("@")[0] || "Athlete";
+        return {
+          id: u.id,
+          name: initialName,
+          xp: xp,
+          avatar: u.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${initialName}`,
+          isMe: u.id === ctx.user.id
+        };
+      })
+      .sort((a, b) => b.xp - a.xp)
+      .map((user, index) => ({ ...user, rank: index + 1 }));
+
+    return leaderboard;
+  }),
 });
