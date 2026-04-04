@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,7 +39,7 @@ function calcLevel(xp: number) {
 }
 
 export default function CommunityPage() {
-    const [authUser, setAuthUser] = useState<any>(null);
+    const [authUser, setAuthUser] = useState<{ user_metadata?: Record<string, string>; email?: string } | null>(null);
     const { data: profileData }   = trpc.profile.get.useQuery();
 
     useEffect(() => {
@@ -58,12 +56,25 @@ export default function CommunityPage() {
     const avatar = authUser?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
 
     const journeyStart = profileData?.journeyStartedAt as string | null | undefined;
-    const xp           = calcXP(journeyStart);
-    const { level, xpInLevel, tier } = calcLevel(xp);
-    const xpToNext     = 1000;
-    const dayNo        = journeyStart
-        ? Math.floor((Date.now() - new Date(journeyStart).getTime()) / 86_400_000) + 1
-        : 1;
+
+
+    // useState lazy initializer is pure — runs once at mount, not on every render
+    const [now] = useState(() => Date.now());
+
+    const xp = useMemo(() => {
+        if (!journeyStart) return 0;
+        const days = Math.floor((now - new Date(journeyStart).getTime()) / 86_400_000);
+        return days * 100 + 500;
+    }, [journeyStart, now]);
+
+    const { level, xpInLevel, tier } = useMemo(() => calcLevel(xp), [xp]);
+
+    const xpToNext = 1000;
+
+    const dayNo = useMemo(() => {
+        if (!journeyStart) return 1;
+        return Math.floor((now - new Date(journeyStart).getTime()) / 86_400_000) + 1;
+    }, [journeyStart, now]);
 
     // Inject live data into the "isMe" row
     const leaderboard = LEADERBOARD.map((row) =>
