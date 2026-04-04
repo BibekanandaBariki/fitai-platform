@@ -68,5 +68,5 @@ export async function GET(request: Request) {
   // The server cannot read hash fragments, but the browser can!
   // By redirecting back to the app, the `@supabase/ssr` browser client will 
   // slurp the token and sign them in automatically on the client side.
-  return NextResponse.redirect(`${origin}/dashboard`)
+  return NextResponse.redirect(`${origin}/auth/verify`)
 }
