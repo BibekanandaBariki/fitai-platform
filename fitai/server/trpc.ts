@@ -30,14 +30,17 @@ const t = initTRPC.context<Context>().create({
 export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
-// Middleware for protected routes
-const isAuthed = t.middleware(({ ctx, next }) => {
-  // TODO: Verify Supabase Session from ctx.req
-  const user = null; // Mock
+import { createClient } from '@/lib/supabase/server';
 
-  if (!user) {
+// Middleware for protected routes
+const isAuthed = t.middleware(async ({ ctx, next }) => {
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user) {
     throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not logged in' });
   }
+  
   return next({
     ctx: {
       ...ctx,

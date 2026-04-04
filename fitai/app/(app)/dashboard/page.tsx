@@ -46,7 +46,7 @@ export default function DashboardPage() {
                     <h1 className="text-2xl font-heading font-bold">
                         {t('title')}, {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || "there"}!
                     </h1>
-                    <p className="text-muted-foreground">{t('ready', { day: 14 })} 🔥</p>
+                    <p className="text-muted-foreground">{activePlan ? `Ready for ${activePlan.todayWorkout?.dayName}? 🔥` : "Let's log your first workout! 🔥"}</p>
                 </div>
                 <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/50 text-xl overflow-hidden">
                     {user?.user_metadata?.avatar_url ? (

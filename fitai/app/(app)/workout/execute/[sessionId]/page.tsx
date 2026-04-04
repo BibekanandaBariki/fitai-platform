@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { X, Info, Settings2, Play, Check, ChevronRight } from "lucide-react";
+import { X, Info, Settings2, Play, Check, ChevronRight, PlayCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Avatar3D } from "@/components/onboarding/Avatar3D";
+import { AnatomyMap } from "@/components/onboarding/AnatomyMap";
 
 // Mock Exercise Data
 const EXERCISES = [
@@ -21,6 +21,7 @@ export default function WorkoutExecutionPage() {
     const [currentSet, setCurrentSet] = useState(1);
     const [weight, setWeight] = useState("");
     const [isResting, setIsResting] = useState(false);
+    const [isVideoOpen, setIsVideoOpen] = useState(false);
     const [restTimeLeft, setRestTimeLeft] = useState(90); // 90 seconds
     const [completedSets, setCompletedSets] = useState<any[]>([]);
 
@@ -90,7 +91,7 @@ export default function WorkoutExecutionPage() {
             <div className="flex-1 relative flex flex-col">
 
                 {/* 3D Viewer Placeholder (React Three Fiber canvas will go here) */}
-                <div className="relative h-2/5 min-h-[300px] w-full bg-secondary/20 flex flex-col items-center justify-center border-b overflow-hidden">
+                <div className="relative h-2/5 min-h-[300px] w-full bg-secondary/20 flex flex-col items-center justify-center border-b overflow-hidden group">
                     <div className="absolute top-4 right-4 flex gap-2 z-10">
                         <Button size="icon" variant="secondary" className="rounded-full bg-background/50 backdrop-blur-md h-8 w-8">
                             <Info className="h-4 w-4" />
@@ -101,7 +102,19 @@ export default function WorkoutExecutionPage() {
                     </div>
                     
                     <div className="absolute inset-0 z-0">
-                        <Avatar3D />
+                        <AnatomyMap muscle={exercise.muscle} className="h-full w-full" />
+                    </div>
+
+                    {/* Massive Play Button Overlay */}
+                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                         <Button 
+                             size="lg" 
+                             className="rounded-full h-16 w-auto px-6 shadow-[0_0_40px_rgba(34,197,94,0);] hover:shadow-[0_0_40px_rgba(34,197,94,0.6)] backdrop-blur-md bg-background/80 border border-primary/50 text-primary group-hover:scale-110 transition-all font-bold"
+                             onClick={() => setIsVideoOpen(true)}
+                         >
+                             <PlayCircle className="h-6 w-6 mr-3" />
+                             Play Form Video
+                         </Button>
                     </div>
 
                     {/* Real-time muscle activation overlay pill */}
@@ -212,6 +225,44 @@ export default function WorkoutExecutionPage() {
                 <Button size="lg" variant="outline" className="w-full max-w-xs h-14 rounded-full text-base" onClick={skipRest}>
                     Skip Rest <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
+            </motion.div>
+        )}
+
+        {/* Video Tutorial Modal */ }
+        {isVideoOpen && (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-[200] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-4"
+            >
+                <div className="w-full max-w-2xl bg-card border border-border/50 rounded-2xl overflow-hidden shadow-2xl relative">
+                     <Button 
+                         variant="ghost" 
+                         size="icon" 
+                         className="absolute top-4 right-4 z-10 bg-background/50 hover:bg-background/80 backdrop-blur-md rounded-full"
+                         onClick={() => setIsVideoOpen(false)}
+                     >
+                         <X className="h-6 w-6" />
+                     </Button>
+                     
+                     {/* Safe fallback exercise gif */}
+                     <div className="aspect-video w-full bg-muted flex items-center justify-center relative overflow-hidden">
+                         <img 
+                             src={`https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXNiaWVnM2o0cXcwYXQ5NmoxeWwwdHZpZXZrbm1lZXRmODIwaWQ2NCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L59aKIC2EQZSE/giphy.gif`} 
+                             alt={`How to do ${exercise.name}`} 
+                             className="w-full h-full object-cover"
+                         />
+                         {/* Tech aesthetic overlay */}
+                         <div className="absolute bottom-4 left-4 bg-background/90 px-3 py-1.5 rounded-sm border-l-2 border-primary font-mono text-xs uppercase tracking-widest text-primary">
+                             AI Form Analysis: ACTIVE
+                         </div>
+                     </div>
+                     <div className="p-6">
+                         <h3 className="text-xl font-heading font-bold mb-2">{exercise.name} Tutorial</h3>
+                         <p className="text-sm text-muted-foreground">Keep your elbows tucked at a 45-degree angle. Lower the weight slowly, pause at your chest, and press explosively upwards while keeping your core braced.</p>
+                     </div>
+                </div>
             </motion.div>
         )}
     </AnimatePresence>
