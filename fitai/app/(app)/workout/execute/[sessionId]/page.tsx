@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { X, Info, Settings2, Play, Check, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Avatar3D } from "@/components/onboarding/Avatar3D";
 
 // Mock Exercise Data
 const EXERCISES = [
@@ -89,8 +90,8 @@ export default function WorkoutExecutionPage() {
             <div className="flex-1 relative flex flex-col">
 
                 {/* 3D Viewer Placeholder (React Three Fiber canvas will go here) */}
-                <div className="relative h-2/5 min-h-[250px] w-full bg-secondary/20 flex flex-col items-center justify-center border-b">
-                    <div className="absolute top-4 right-4 flex gap-2">
+                <div className="relative h-2/5 min-h-[300px] w-full bg-secondary/20 flex flex-col items-center justify-center border-b overflow-hidden">
+                    <div className="absolute top-4 right-4 flex gap-2 z-10">
                         <Button size="icon" variant="secondary" className="rounded-full bg-background/50 backdrop-blur-md h-8 w-8">
                             <Info className="h-4 w-4" />
                         </Button>
@@ -98,13 +99,13 @@ export default function WorkoutExecutionPage() {
                             <Settings2 className="h-4 w-4" />
                         </Button>
                     </div>
-                    <div className="text-center text-muted-foreground">
-                        <Play className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                        <p className="text-sm font-medium">3D Model Viewer</p>
-                        <p className="text-xs">Interactive demonstration</p>
+                    
+                    <div className="absolute inset-0 z-0">
+                        <Avatar3D />
                     </div>
+
                     {/* Real-time muscle activation overlay pill */}
-                    <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-full border text-xs font-semibold flex items-center gap-2 shadow-xs">
+                    <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-full border text-xs font-semibold flex items-center gap-2 shadow-xs z-10">
                         <span className="w-2 h-2 rounded-full bg-destructive animate-pulse"></span> {exercise.muscle}
                     </div>
                 </div>

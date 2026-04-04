@@ -5,15 +5,27 @@ import { MacroRing } from "@/components/nutrition/MacroRing";
 import { HabitCheckbox } from "@/components/shared/HabitCheckbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dumbbell, Droplet, Flame, ArrowRight, Play, Edit3 } from "lucide-react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc/client";
 import { useTranslations } from "next-intl";
+import { createBrowserClient } from "@supabase/ssr";
 
 export default function DashboardPage() {
     const t = useTranslations('Dashboard');
     const { data: activePlan, isLoading } = trpc.workout.getActivePlan.useQuery();
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const supabase = createBrowserClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+        );
+        supabase.auth.getUser().then(({ data }) => {
+            if (data.user) setUser(data.user);
+        });
+    }, []);
 
     const [habits, setHabits] = useState([
         { id: "water", title: "Drink 3L Water", completed: false, streak: 12, icon: <Droplet className="h-4 w-4" /> },
@@ -31,11 +43,17 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-heading font-bold">{t('title')}, Alex!</h1>
+                    <h1 className="text-2xl font-heading font-bold">
+                        {t('title')}, {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || "there"}!
+                    </h1>
                     <p className="text-muted-foreground">{t('ready', { day: 14 })} 🔥</p>
                 </div>
                 <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/50 text-xl overflow-hidden">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Avatar" />
+                    {user?.user_metadata?.avatar_url ? (
+                        <img src={user.user_metadata.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
+                    ) : (
+                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || "Alex"}`} alt="Avatar" />
+                    )}
                 </div>
             </div>
 
