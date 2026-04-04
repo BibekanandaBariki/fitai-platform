@@ -8,6 +8,9 @@ export function URLSanitizer() {
     // Only run if there is a hash fragment and it looks like a Supabase Implicit Grant
     if (typeof window !== "undefined" && window.location.hash.includes("access_token")) {
       
+      // Do not interfere if we are in the middle of standard verification interceptor
+      if (window.location.pathname.includes("/auth/verify")) return;
+      
       const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
       
