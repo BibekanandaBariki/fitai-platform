@@ -41,8 +41,9 @@ export const users = pgTable('users', {
   language: languageEnum('language').default('en'),
   timezone: varchar('timezone'),
   isOnboarded: boolean('is_onboarded').default(false),
+  journeyStartedAt: timestamp('journey_started_at', { withTimezone: true }),
   referralCode: varchar('referral_code').unique(),
-  referredById: uuid('referred_by') // Self-referencing FK should be handled at relation level or explicitly
+  referredById: uuid('referred_by')
 });
 
 export const userProfiles = pgTable('user_profiles', {
@@ -61,6 +62,7 @@ export const userProfiles = pgTable('user_profiles', {
   activityLevel: activityLevelEnum('activity_level'),
   bodyType: bodyTypeEnum('body_type'),
   profilePhotoUrl: varchar('profile_photo_url'),
+  journeyStartedAt: timestamp('journey_started_at', { withTimezone: true }),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow()
 });
 

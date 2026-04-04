@@ -8,6 +8,7 @@ interface OnboardingState {
     timeline: string | null;
 
     // Step 2: Physical
+    gender: 'male' | 'female' | 'other' | null;
     height: number | null;
     weight: number | null;
     targetWeight: number | null;
@@ -40,6 +41,7 @@ const initialState = {
     primaryGoal: null,
     subGoals: [],
     timeline: null,
+    gender: null as 'male' | 'female' | 'other' | null,
     height: null,
     weight: null,
     targetWeight: null,

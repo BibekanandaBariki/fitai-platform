@@ -14,9 +14,10 @@ export default function OnboardingStep7() {
     const [isFinishing, setIsFinishing] = useState(false);
     
     // Get stored data
-    const { primaryGoal, experienceYears, days, location } = useOnboardingStore();
+    const { primaryGoal, experienceYears, days, location, gender, height, weight, targetWeight } = useOnboardingStore();
     
-    // TRPC Mutation
+    // TRPC Mutations
+    const saveProfile = trpc.profile.save.useMutation();
     const generatePlan = trpc.workout.generatePlan.useMutation({
         onSuccess: (data) => {
             console.log("Plan Generated successfully:", data);
@@ -47,7 +48,7 @@ export default function OnboardingStep7() {
             confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
         }, 250);
 
-        // Map state to TRPC schema securely
+        // Map state to enum values
         let goalEnum: any = 'general_health';
         if (primaryGoal === 'Build Muscle') goalEnum = 'hypertrophy';
         if (primaryGoal === 'Lose Fat') goalEnum = 'fat_loss';
@@ -58,6 +59,16 @@ export default function OnboardingStep7() {
         if (experienceYears && experienceYears > 3) expEnum = 'advanced';
 
         const equipment = location === 'Gym' ? ['barbell', 'dumbbell', 'machine', 'cable'] : ['bodyweight', 'bands'];
+
+        // Save profile to DB first (non-blocking), then generate plan
+        saveProfile.mutate({
+            gender: (gender as any) ?? undefined,
+            heightCm: height ?? undefined,
+            weightKg: weight ?? undefined,
+            targetWeightKg: targetWeight ?? undefined,
+            fitnessGoal: goalEnum,
+            experienceLevel: expEnum,
+        });
 
         generatePlan.mutate({
             goal: goalEnum,

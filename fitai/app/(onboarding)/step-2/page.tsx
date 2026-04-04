@@ -4,15 +4,35 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Camera } from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, X, Check } from "lucide-react";
 import { Avatar3D } from "@/components/onboarding/Avatar3D";
+import { useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+
+const GENDERS = [
+    { value: 'male',   label: '♂  Male'   },
+    { value: 'female', label: '♀  Female' },
+    { value: 'other',  label: '⚧  Other'  },
+] as const;
 
 export default function OnboardingStep2() {
-    const { height, weight, targetWeight, updateData } = useOnboardingStore();
+    const { gender, height, weight, targetWeight, updateData } = useOnboardingStore();
     const router = useRouter();
 
-    // Simple BMI calculater for live feedback if needed
+    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+    const fileRef = useRef<HTMLInputElement>(null);
+
     const bmi = height && weight ? (weight / Math.pow(height / 100, 2)).toFixed(1) : null;
+
+    const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => setPhotoPreview(ev.target?.result as string);
+        reader.readAsDataURL(file);
+        // Store the file reference for upload at step 7
+        updateData({ progressPhoto: file } as any);
+    };
 
     const handleNext = () => {
         if (height && weight && targetWeight) {
@@ -53,6 +73,27 @@ export default function OnboardingStep2() {
                     </p>
 
                     <div className="space-y-8">
+                        {/* Gender Selector */}
+                        <div>
+                            <label className="text-sm font-medium mb-3 block">Your gender</label>
+                            <div className="flex gap-3">
+                                {GENDERS.map((g) => (
+                                    <button
+                                        key={g.value}
+                                        onClick={() => updateData({ gender: g.value })}
+                                        className={cn(
+                                            "flex-1 py-3 px-2 rounded-xl border-2 text-sm font-medium transition-all duration-200",
+                                            gender === g.value
+                                                ? "border-primary bg-primary/10 text-primary shadow-[0_0_12px_rgba(34,197,94,0.25)]"
+                                                : "border-input bg-card text-muted-foreground hover:border-primary/40"
+                                        )}
+                                    >
+                                        {g.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
                         {/* Height Input */}
                         <div>
                             <label className="text-sm font-medium mb-3 block">How tall are you?</label>
@@ -68,11 +109,11 @@ export default function OnboardingStep2() {
                                 />
                                 <span className="text-2xl font-semibold text-muted-foreground">cm</span>
                             </div>
-                            <input 
-                                type="range" 
-                                min="100" max="250" 
+                            <input
+                                type="range"
+                                min="100" max="250"
                                 step="1"
-                                value={height || 175} 
+                                value={height || 175}
                                 onChange={(e) => updateData({ height: Number(e.target.value) })}
                                 className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                             />
@@ -93,11 +134,11 @@ export default function OnboardingStep2() {
                                 />
                                 <span className="text-2xl font-semibold text-muted-foreground">kg</span>
                             </div>
-                            <input 
-                                type="range" 
-                                min="30" max="250" 
+                            <input
+                                type="range"
+                                min="30" max="250"
                                 step="1"
-                                value={weight || 70} 
+                                value={weight || 70}
                                 onChange={(e) => updateData({ weight: Number(e.target.value) })}
                                 className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                             />
@@ -131,24 +172,55 @@ export default function OnboardingStep2() {
                             )}
                         </div>
 
-                        {/* Optional Photo Upload */}
+                        {/* Day 1 Photo Upload */}
                         <div className="pt-6 border-t border-border">
-                            <label className="text-sm font-medium mb-3 block flex items-center justify-between">
+                            <label className="text-sm font-medium mb-3 flex items-center justify-between">
                                 <span>Add Day 1 Photo</span>
                                 <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">Optional</span>
                             </label>
-                            <button className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-input rounded-xl bg-card hover:border-primary/50 hover:bg-primary/5 transition-colors group">
-                                <div className="p-4 rounded-full bg-muted group-hover:bg-primary/20 transition-colors mb-3">
-                                    <Camera className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+
+                            {/* Hidden real file input */}
+                            <input
+                                ref={fileRef}
+                                type="file"
+                                accept="image/*"
+                                capture="user"
+                                className="hidden"
+                                onChange={handlePhotoSelect}
+                            />
+
+                            {photoPreview ? (
+                                <div className="relative rounded-xl overflow-hidden border-2 border-primary/40">
+                                    <img src={photoPreview} alt="Day 1 Photo" className="w-full h-48 object-cover" />
+                                    <div className="absolute top-2 right-2 flex gap-2">
+                                        <span className="bg-primary/90 text-xs font-bold px-2 py-1 rounded-full text-black flex items-center gap-1">
+                                            <Check className="h-3 w-3" /> Saved
+                                        </span>
+                                        <button
+                                            onClick={() => { setPhotoPreview(null); updateData({ progressPhoto: null } as any); }}
+                                            className="bg-background/80 rounded-full p-1 border border-input"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    </div>
                                 </div>
-                                <span className="font-medium">Upload progress photo</span>
-                                <span className="text-sm text-muted-foreground mt-1">Private, encrypted, just for you.</span>
-                            </button>
+                            ) : (
+                                <button
+                                    onClick={() => fileRef.current?.click()}
+                                    className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-input rounded-xl bg-card hover:border-primary/50 hover:bg-primary/5 transition-colors group"
+                                >
+                                    <div className="p-4 rounded-full bg-muted group-hover:bg-primary/20 transition-colors mb-3">
+                                        <Camera className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                                    </div>
+                                    <span className="font-medium">Upload progress photo</span>
+                                    <span className="text-sm text-muted-foreground mt-1">Private, encrypted, just for you.</span>
+                                </button>
+                            )}
                         </div>
                     </div>
                 </motion.div>
 
-                {/* Right side 3D Avatar presentation */}
+                {/* Right side Avatar */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
