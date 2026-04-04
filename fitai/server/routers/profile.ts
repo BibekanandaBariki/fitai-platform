@@ -122,7 +122,7 @@ export const profileRouter = createTRPCRouter({
         const days = Math.floor((now - started) / 86_400_000);
         const xp = days * 100 + 500;
         
-        let initialName = u.fullName?.split(" ")[0] || u.email?.split("@")[0] || "Athlete";
+        const initialName = u.fullName?.split(" ")[0] || u.email?.split("@")[0] || "Athlete";
         return {
           id: u.id,
           name: initialName,
