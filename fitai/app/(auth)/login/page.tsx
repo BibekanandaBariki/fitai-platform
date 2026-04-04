@@ -15,15 +15,19 @@ export default function LoginPage() {
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         const { supabase } = await import("@/lib/supabase/client");
-        const { error } = await supabase.auth.signInWithOAuth({
+        const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
                 redirectTo: `${window.location.origin}/auth/callback`,
+                skipBrowserRedirect: true, // Prevents cookie/redirect race condition on first login
             },
         });
+        
         if (error) {
             console.error("Google login error:", error);
             setIsLoading(false);
+        } else if (data?.url) {
+            window.location.href = data.url;
         }
     };
 
