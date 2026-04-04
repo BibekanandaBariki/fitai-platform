@@ -9,10 +9,11 @@ import { cn } from "@/lib/utils";
 import { AnatomyMap } from "@/components/onboarding/AnatomyMap";
 
 // Mock Exercise Data
+// videoId = YouTube video ID for exercise tutorial embed
 const EXERCISES = [
-    { id: 1, name: "Barbell Bench Press", sets: 4, reps: "8-10", muscle: "Chest", rpe: 8, prevWeight: 60 },
-    { id: 2, name: "Incline Dumbbell Press", sets: 3, reps: "10-12", muscle: "Upper Chest", rpe: 8, prevWeight: 24 },
-    { id: 3, name: "Cable Crossovers", sets: 3, reps: "12-15", muscle: "Lower Chest", rpe: 9, prevWeight: 15 },
+    { id: 1, name: "Barbell Bench Press", sets: 4, reps: "8-10", muscle: "Chest", rpe: 8, prevWeight: 60, videoId: "rT7DgCr-3pg", formTip: "Keep your feet flat on the floor, elbows at 45°. Lower the bar slowly to mid-chest, pause, then press explosively. Keep your core braced and scapula retracted throughout." },
+    { id: 2, name: "Incline Dumbbell Press", sets: 3, reps: "10-12", muscle: "Upper Chest", rpe: 8, prevWeight: 24, videoId: "8iPEnn-ltC8", formTip: "Set the bench to 30-45°. Control the descent slowly, let elbows track below shoulder level. Squeeze the upper chest at the top. Avoid flaring elbows too wide." },
+    { id: 3, name: "Cable Crossovers", sets: 3, reps: "12-15", muscle: "Lower Chest", rpe: 9, prevWeight: 15, videoId: "taI4XduLpTk", formTip: "Stand in the middle of the cable station, pull cables forward and down in an arc, meeting hands at the bottom. Fully stretch the chest at the top of each rep." },
 ];
 
 export default function WorkoutExecutionPage() {
@@ -246,21 +247,24 @@ export default function WorkoutExecutionPage() {
                          <X className="h-6 w-6" />
                      </Button>
                      
-                     {/* Safe fallback exercise gif */}
-                     <div className="aspect-video w-full bg-muted flex items-center justify-center relative overflow-hidden">
-                         <img 
-                             src={`https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXNiaWVnM2o0cXcwYXQ5NmoxeWwwdHZpZXZrbm1lZXRmODIwaWQ2NCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L59aKIC2EQZSE/giphy.gif`} 
-                             alt={`How to do ${exercise.name}`} 
-                             className="w-full h-full object-cover"
+                     {/* YouTube Tutorial Embed */}
+                     <div className="aspect-video w-full bg-black relative overflow-hidden">
+                         <iframe
+                             key={exercise.id}
+                             className="w-full h-full"
+                             src={`https://www.youtube.com/embed/${exercise.videoId}?autoplay=1&mute=1&rel=0&modestbranding=1`}
+                             title={`${exercise.name} Tutorial`}
+                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                             allowFullScreen
                          />
                          {/* Tech aesthetic overlay */}
-                         <div className="absolute bottom-4 left-4 bg-background/90 px-3 py-1.5 rounded-sm border-l-2 border-primary font-mono text-xs uppercase tracking-widest text-primary">
+                         <div className="absolute bottom-4 left-4 bg-background/90 px-3 py-1.5 rounded-sm border-l-2 border-primary font-mono text-xs uppercase tracking-widest text-primary pointer-events-none">
                              AI Form Analysis: ACTIVE
                          </div>
                      </div>
                      <div className="p-6">
                          <h3 className="text-xl font-heading font-bold mb-2">{exercise.name} Tutorial</h3>
-                         <p className="text-sm text-muted-foreground">Keep your elbows tucked at a 45-degree angle. Lower the weight slowly, pause at your chest, and press explosively upwards while keeping your core braced.</p>
+                         <p className="text-sm text-muted-foreground">{exercise.formTip}</p>
                      </div>
                 </div>
             </motion.div>

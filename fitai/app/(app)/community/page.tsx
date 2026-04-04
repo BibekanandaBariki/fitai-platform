@@ -14,6 +14,9 @@ const LEADERBOARD = [
     { rank: 5, name: "Sneha R.", xp: 8900, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha", isMe: false },
 ];
 
+import { useState, useEffect } from "react";
+import { createBrowserClient } from "@supabase/ssr";
+
 const BADGES = [
     { id: 1, name: "First Step", desc: "Complete 1st workout", icon: Star, unlocked: true },
     { id: 2, name: "Consistency", desc: "7-day streak", icon: Flame, unlocked: true },
@@ -22,6 +25,21 @@ const BADGES = [
 ];
 
 export default function CommunityPage() {
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const supabase = createBrowserClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+        );
+        supabase.auth.getUser().then(({ data }) => {
+            if (data.user) setUser(data.user);
+        });
+    }, []);
+
+    const name = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || "there";
+    const avatar = user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-8">
 
@@ -45,7 +63,7 @@ export default function CommunityPage() {
                 <CardContent className="p-6 relative z-10">
                     <div className="flex items-center gap-4 mb-4">
                         <div className="w-16 h-16 rounded-full bg-background border-2 border-primary overflow-hidden">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Avatar" className="w-full h-full object-cover" />
+                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold font-heading">Level 12</h2>
@@ -131,12 +149,12 @@ export default function CommunityPage() {
                                 </div>
 
                                 <div className="w-10 h-10 rounded-full border border-input ml-3 mr-4 overflow-hidden bg-muted">
-                                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                                    <img src={user.isMe ? avatar : user.avatar} alt={user.name} className="w-full h-full object-cover" />
                                 </div>
 
                                 <div className="flex-1">
                                     <h4 className={cn("font-medium text-sm", user.isMe && "text-primary font-bold")}>
-                                        {user.name}
+                                        {user.isMe ? `${name} (You)` : user.name}
                                     </h4>
                                 </div>
 
