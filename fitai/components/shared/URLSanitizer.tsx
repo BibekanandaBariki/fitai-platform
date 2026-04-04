@@ -10,7 +10,7 @@ export function URLSanitizer() {
       
       const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
       );
 
       // The safest way to clean the URL is to wait for Supabase to officially process the token
