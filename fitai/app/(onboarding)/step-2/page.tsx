@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Camera } from "lucide-react";
+import { Avatar3D } from "@/components/onboarding/Avatar3D";
 
 export default function OnboardingStep2() {
     const { height, weight, targetWeight, updateData } = useOnboardingStore();
@@ -37,11 +38,12 @@ export default function OnboardingStep2() {
                 <span className="ml-auto text-sm font-medium text-muted-foreground mr-2">2 of 7</span>
             </div>
 
-            <main className="flex-1 container mx-auto px-4 pb-32 max-w-xl mt-8">
+            <main className="flex-1 container mx-auto px-4 pb-32 max-w-6xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <motion.div
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.4 }}
+                    className="order-2 md:order-1"
                 >
                     <h1 className="text-3xl sm:text-4xl font-heading font-bold mb-3 tracking-tight">
                         Tell us about yourself
@@ -54,35 +56,51 @@ export default function OnboardingStep2() {
                         {/* Height Input */}
                         <div>
                             <label className="text-sm font-medium mb-3 block">How tall are you?</label>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4 mb-4">
                                 <input
                                     type="number"
                                     placeholder="175"
                                     value={height || ""}
                                     onChange={(e) => updateData({ height: Number(e.target.value) })}
                                     className="flex-1 max-w-40 h-16 text-3xl font-heading font-bold text-center rounded-xl border-2 border-input bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary/50"
-                                    min="50"
-                                    max="300"
+                                    min="100"
+                                    max="250"
                                 />
                                 <span className="text-2xl font-semibold text-muted-foreground">cm</span>
                             </div>
+                            <input 
+                                type="range" 
+                                min="100" max="250" 
+                                step="1"
+                                value={height || 175} 
+                                onChange={(e) => updateData({ height: Number(e.target.value) })}
+                                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                            />
                         </div>
 
                         {/* Current Weight Input */}
                         <div>
                             <label className="text-sm font-medium mb-3 block">Current weight</label>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4 mb-4">
                                 <input
                                     type="number"
                                     placeholder="70"
                                     value={weight || ""}
                                     onChange={(e) => updateData({ weight: Number(e.target.value) })}
                                     className="flex-1 max-w-40 h-16 text-3xl font-heading font-bold text-center rounded-xl border-2 border-input bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary/50"
-                                    min="20"
-                                    max="400"
+                                    min="30"
+                                    max="250"
                                 />
                                 <span className="text-2xl font-semibold text-muted-foreground">kg</span>
                             </div>
+                            <input 
+                                type="range" 
+                                min="30" max="250" 
+                                step="1"
+                                value={weight || 70} 
+                                onChange={(e) => updateData({ weight: Number(e.target.value) })}
+                                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                            />
                         </div>
 
                         {/* Target Weight Input */}
@@ -128,6 +146,16 @@ export default function OnboardingStep2() {
                             </button>
                         </div>
                     </div>
+                </motion.div>
+
+                {/* Right side 3D Avatar presentation */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1, type: "spring", bounce: 0.4 }}
+                    className="order-1 md:order-2 flex flex-col justify-center items-center h-full w-full max-w-md mx-auto"
+                >
+                    <Avatar3D />
                 </motion.div>
             </main>
 
