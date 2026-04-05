@@ -21,8 +21,32 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "FitAI — India's #1 AI Personal Trainer & Fitness Coach",
-  description: "Transform your body with personalized AI workout plans, meal tracking, and real-time coaching. Free to start. 500,000+ Indians already transforming.",
+  title: "FitAI - AI Fitness & Workout Tracker",
+  description: "FitAI helps you track workouts, fitness progress, and health using AI.",
+  keywords: ["fitness app", "workout tracker", "AI fitness", "health tracker"],
+  robots: {
+    index: true,
+    follow: true,
+  },
+  verification: {
+    google: "DpUcouU-3JRPSebTEpmUDu93WgxPjdU23aqEcdnQ_jE",
+  },
+  openGraph: {
+    title: "FitAI - AI Fitness & Workout Tracker",
+    description: "FitAI helps you track workouts, fitness progress, and health using AI.",
+    url: "https://fitai-flax.vercel.app",
+    siteName: "FitAI",
+    images: [
+      {
+        url: "/bb_fitness_logo.png",
+        width: 800,
+        height: 600,
+        alt: "FitAI Branding",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
   manifest: "/manifest.json",
   icons: {
     icon: [
