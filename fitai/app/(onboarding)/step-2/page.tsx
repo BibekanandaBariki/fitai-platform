@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Camera, X, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, X, Check, Box } from "lucide-react";
 import { Avatar3D } from "@/components/onboarding/Avatar3D";
+import { FBXAnimationPlayer } from "@/components/3d/FBXAnimationPlayer";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,7 @@ export default function OnboardingStep2() {
     const router = useRouter();
 
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+    const [is3DMode, setIs3DMode] = useState(false);
     const fileRef = useRef<HTMLInputElement>(null);
 
     const bmi = height && weight ? (weight / Math.pow(height / 100, 2)).toFixed(1) : null;
@@ -227,7 +229,30 @@ export default function OnboardingStep2() {
                     transition={{ duration: 0.6, delay: 0.1, type: "spring", bounce: 0.4 }}
                     className="order-1 md:order-2 flex flex-col justify-center items-center h-full w-full max-w-md mx-auto"
                 >
-                    <Avatar3D />
+                    <div className="w-full flex items-center justify-between mb-3 px-1">
+                        <label className="text-sm font-medium flex items-center gap-2 cursor-pointer transition-colors hover:text-primary">
+                            <Box className="h-4 w-4" /> Use 3D Model
+                        </label>
+                        <button 
+                            onClick={() => setIs3DMode(!is3DMode)}
+                            className={cn(
+                                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                                is3DMode ? "bg-primary" : "bg-input"
+                            )}
+                        >
+                            <span className={cn(
+                                "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform",
+                                is3DMode ? "translate-x-5" : "translate-x-0"
+                            )} />
+                        </button>
+                    </div>
+                    {is3DMode ? (
+                        <div className="w-full h-full min-h-[50vh] md:min-h-[600px]">
+                            <FBXAnimationPlayer initialExerciseId="idle" hideList bmi={Number(bmi) || 22} />
+                        </div>
+                    ) : (
+                        <Avatar3D />
+                    )}
                 </motion.div>
             </main>
 
