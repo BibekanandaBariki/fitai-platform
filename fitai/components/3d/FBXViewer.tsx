@@ -90,7 +90,7 @@ function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0, heightScale = 1.0
         }
     });
 
-    const baseScale = 0.08;
+    const baseScale = 0.18;
     const xzScale = baseScale * Math.min(Math.max(bmiScale, 0.7), 1.5);
     const yScale = baseScale * heightScale;
 
@@ -105,7 +105,7 @@ function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0, heightScale = 1.0
 export function FBXViewer({ url, isPlaying, tintColor, bmiScale, heightScale }: FBXModelProps) {
     return (
         <div className="w-full h-full min-h-[400px] relative cursor-grab active:cursor-grabbing rounded-3xl overflow-hidden bg-gradient-to-b from-background to-primary/5 border border-primary/10">
-            <Canvas shadows camera={{ position: [0, 1.5, 5], fov: 45 }}>
+            <Canvas shadows camera={{ position: [0, 2, 7], fov: 45 }}>
                 <React.Suspense fallback={null}>
                     <Environment preset="city" />
                     <ambientLight intensity={0.6} />
