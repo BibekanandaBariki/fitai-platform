@@ -15,7 +15,7 @@ const SUGGESTIONS = [
 ];
 
 export default function CoachPage() {
-    const { messages, input, handleInputChange, handleSubmit, setInput, isLoading } = useChat() as any;
+    const { messages, input, handleInputChange, handleSubmit, setInput, isLoading, append } = useChat() as any;
     
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -97,7 +97,10 @@ export default function CoachPage() {
                     {SUGGESTIONS.map((suggestion, i) => (
                         <button
                             key={i}
-                            onClick={() => setInput(suggestion)}
+                            onClick={() => {
+                                setInput("");
+                                append({ role: 'user', content: suggestion });
+                            }}
                             className="inline-flex items-center text-xs font-medium bg-card border border-input px-3 py-1.5 rounded-full hover:border-primary/50 hover:bg-primary/5 transition-colors press-glow"
                         >
                             {suggestion}
@@ -118,10 +121,9 @@ export default function CoachPage() {
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
-                                // Create a synthetic event or just call handleSubmit logic if possible, 
-                                // but for textarea, forms are easier handled via button click or standard submit.
-                                // We'll trigger the form submit programmatically:
-                                e.currentTarget.form?.requestSubmit();
+                                if (input.trim() && !isLoading) {
+                                  handleSubmit(e);
+                                }
                             }
                         }}
                         placeholder="Ask your coach anything..."

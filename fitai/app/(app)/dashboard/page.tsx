@@ -15,7 +15,10 @@ import { createBrowserClient } from "@supabase/ssr";
 export default function DashboardPage() {
     const t = useTranslations('Dashboard');
     const { data: activePlan, isLoading } = trpc.workout.getActivePlan.useQuery();
+    const { data: profileData, refetch: refetchProfile } = trpc.profile.get.useQuery();
+    const updateAvatarMutation = trpc.profile.updateAvatar.useMutation();
     const [user, setUser] = useState<any>(null);
+    const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
     useEffect(() => {
         const supabase = createBrowserClient(
@@ -37,6 +40,22 @@ export default function DashboardPage() {
         setHabits(habits.map(h => h.id === id ? { ...h, completed } : h));
     };
 
+    const AVATAR_OPTIONS = [
+        { label: "Male Default", url: `https://api.dicebear.com/7.x/avataaars/svg?seed=Felix` },
+        { label: "Female Default", url: `https://api.dicebear.com/7.x/avataaars/svg?seed=Mia` },
+        { label: "Superhero", url: `https://api.dicebear.com/7.x/adventurer/svg?seed=Superhero` },
+        { label: "Cute Bot", url: `https://api.dicebear.com/7.x/bottts/svg?seed=Tinker` },
+        { label: "Artist", url: `https://api.dicebear.com/7.x/micah/svg?seed=Artist` }
+    ];
+
+    const currentAvatar = profileData?.profile?.profilePhotoUrl || user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || "Alex"}`;
+
+    const handleSelectAvatar = async (url: string) => {
+        await updateAvatarMutation.mutateAsync({ avatarUrl: url });
+        refetchProfile();
+        setIsAvatarModalOpen(false);
+    };
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-8">
 
@@ -48,14 +67,46 @@ export default function DashboardPage() {
                     </h1>
                     <p className="text-muted-foreground">{activePlan ? `Ready for ${activePlan.todayWorkout?.dayName}? 🔥` : "Let's log your first workout! 🔥"}</p>
                 </div>
-                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/50 text-xl overflow-hidden">
-                    {user?.user_metadata?.avatar_url ? (
-                        <img src={user.user_metadata.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
-                    ) : (
-                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || "Alex"}`} alt="Avatar" />
-                    )}
-                </div>
+                <button 
+                    onClick={() => setIsAvatarModalOpen(true)}
+                    className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary overflow-hidden hover:scale-105 transition-transform"
+                >
+                    <img src={currentAvatar} alt="Avatar" className="h-full w-full object-cover" />
+                </button>
             </div>
+
+            {/* Avatar Selection Modal Overlay */}
+            {isAvatarModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in">
+                    <Card className="w-full max-w-sm border border-border shadow-2xl relative">
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="absolute top-2 right-2 text-muted-foreground"
+                            onClick={() => setIsAvatarModalOpen(false)}
+                        >
+                            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+                        </Button>
+                        <CardContent className="p-6">
+                            <h2 className="text-xl font-heading font-bold mb-4 text-center">Customize Avatar</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                {AVATAR_OPTIONS.map((avatar, idx) => (
+                                    <button 
+                                        key={idx}
+                                        onClick={() => handleSelectAvatar(avatar.url)}
+                                        className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-transparent hover:border-primary/50 hover:bg-primary/10 transition-colors"
+                                    >
+                                        <div className="h-16 w-16 rounded-full overflow-hidden bg-primary/20 border border-primary/20">
+                                            <img src={avatar.url} alt={avatar.label} className="h-full w-full object-cover" />
+                                        </div>
+                                        <span className="text-xs font-semibold text-muted-foreground">{avatar.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
 
             {/* AI Quote Card */}
             <Card className="bg-gradient-to-r from-secondary to-secondary/80 border-none shadow-lg">

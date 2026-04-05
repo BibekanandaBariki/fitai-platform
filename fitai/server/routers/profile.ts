@@ -82,6 +82,17 @@ export const profileRouter = createTRPCRouter({
       return { success: true };
     }),
 
+  // Update profile photo
+  updateAvatar: protectedProcedure
+    .input(z.object({ avatarUrl: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const now = new Date();
+      await db.update(userProfiles)
+        .set({ profilePhotoUrl: input.avatarUrl, updatedAt: now })
+        .where(eq(userProfiles.userId, ctx.user.id));
+      return { success: true };
+    }),
+
   // Reset journey — wipes profile and resets onboarding flag
   reset: protectedProcedure.mutation(async ({ ctx }) => {
     const userId = ctx.user.id;

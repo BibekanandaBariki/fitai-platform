@@ -10,7 +10,9 @@ import { cn } from "@/lib/utils";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 
-const WEIGHT_DATA = [
+import { trpc } from "@/lib/trpc/client";
+
+const WEIGHT_DATA_MOCK = [
     { date: "Oct 1", weight: 78.5 },
     { date: "Oct 5", weight: 77.8 },
     { date: "Oct 10", weight: 77.2 },
@@ -27,6 +29,7 @@ const RECORDS = [
 ];
 
 export default function ProgressPage() {
+    const { data: profileData } = trpc.profile.get.useQuery();
     const [activeTab, setActiveTab] = useState<"overview" | "photos" | "history">("overview");
     const [isExporting, setIsExporting] = useState(false);
 
@@ -49,6 +52,16 @@ export default function ProgressPage() {
         setIsExporting(false);
     };
 
+    const currentWeight = profileData?.profile?.weightKg ? Number(profileData.profile.weightKg) : null;
+    const targetWeight = profileData?.profile?.targetWeightKg ? Number(profileData.profile.targetWeightKg) : null;
+    const diff = (currentWeight && targetWeight) ? Math.abs(currentWeight - targetWeight).toFixed(1) : "0.0";
+    
+    // Smooth the mock graph by anchoring it on the user's actual current weight at the end
+    const dynamicGraphData = currentWeight ? [
+        ...WEIGHT_DATA_MOCK.map(d => ({ ...d, weight: d.weight + (currentWeight - 75.4) })).slice(0, 6),
+        { date: "Today", weight: currentWeight }
+    ] : WEIGHT_DATA_MOCK;
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-8">
 
@@ -56,7 +69,9 @@ export default function ProgressPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-heading font-bold tracking-tight">Progress</h1>
-                    <p className="text-muted-foreground">You've lost 3.1kg this month! 🎉</p>
+                    <p className="text-muted-foreground">
+                        {currentWeight && targetWeight ? `You're ${diff}kg away from your goal! 🎉` : "Track your journey here! 🎉"}
+                    </p>
                 </div>
                 <Button variant="outline" size="sm" onClick={exportPDF} disabled={isExporting}>
                     {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
@@ -123,9 +138,9 @@ export default function ProgressPage() {
                             <CardContent className="p-0">
                                 <div className="flex items-end justify-between p-4 pb-0">
                                     <div>
-                                        <span className="text-3xl font-heading font-bold">75.4 <span className="text-base text-muted-foreground font-medium">kg</span></span>
+                                        <span className="text-3xl font-heading font-bold">{currentWeight ?? '--'} <span className="text-base text-muted-foreground font-medium">kg</span></span>
                                         <p className="text-xs text-primary font-medium flex items-center gap-1 mt-1">
-                                            <TrendingUp className="h-3 w-3 rotate-180" /> -3.1kg this month
+                                            <TrendingUp className="h-3 w-3 rotate-180" /> Target: {targetWeight ?? '--'}kg
                                         </p>
                                     </div>
                                     <Button variant="outline" size="sm" className="h-8">
@@ -135,7 +150,7 @@ export default function ProgressPage() {
 
                                 <div className="h-[200px] w-full mt-4">
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={WEIGHT_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                                        <LineChart data={dynamicGraphData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                                             <YAxis
                                                 domain={['dataMin - 1', 'dataMax + 1']}
                                                 axisLine={false}
