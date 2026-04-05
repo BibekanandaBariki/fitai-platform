@@ -30,12 +30,15 @@ export default function OnboardingStep2() {
     const bmi = height && weight ? (weight / Math.pow(height / 100, 2)).toFixed(1) : null;
 
     const [userEditedTarget, setUserEditedTarget] = useState(false);
+    const prevHeightRef = useRef<number | null>(height);
 
     useEffect(() => {
-        if (height && !userEditedTarget) {
+        // Only auto-calc if height ACTUALLY changed during this session, and user hasn't explicitly edited the target
+        if (height && height !== prevHeightRef.current && !userEditedTarget) {
             const idealWeight = Math.round(22 * Math.pow(height / 100, 2));
             updateData({ targetWeight: idealWeight });
         }
+        prevHeightRef.current = height;
     }, [height, userEditedTarget, updateData]);
 
     const toDisplayHeight = (cm: number | null) => {
@@ -55,8 +58,10 @@ export default function OnboardingStep2() {
     };
 
     const handleWeightChange = (valStr: string, field: 'weight' | 'targetWeight') => {
+        if (field === 'targetWeight') {
+            setUserEditedTarget(valStr.trim() !== "");
+        }
         const val = parseFloat(valStr);
-        if (field === 'targetWeight') setUserEditedTarget(true);
         if (isNaN(val)) return updateData({ [field]: null });
         updateData({ [field]: weightUnit === 'lbs' ? Math.round(val / 2.20462) : val });
     };
@@ -284,37 +289,33 @@ export default function OnboardingStep2() {
                     </div>
                 </motion.div>
 
-                {/* Right side Avatar */}
+                {/* Right side Models */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1, type: "spring", bounce: 0.4 }}
-                    className="order-1 md:order-2 flex flex-col justify-center items-center h-full w-full max-w-md mx-auto"
+                    className="order-1 md:order-2 flex flex-col justify-center items-center h-full w-full mx-auto space-y-6"
                 >
-                    <div className="w-full flex items-center justify-between mb-3 px-1">
-                        <label className="text-sm font-medium flex items-center gap-2 cursor-pointer transition-colors hover:text-primary">
-                            <Box className="h-4 w-4" /> Use 3D Model
+                    {/* Render both 3D models side by side or stacked */}
+                    <div className="w-full flex items-center justify-between px-1 mb-2">
+                        <label className="text-sm font-medium flex items-center gap-2 text-primary">
+                            <Box className="h-4 w-4" /> Live AI Avatars
                         </label>
-                        <button 
-                            onClick={() => setIs3DMode(!is3DMode)}
-                            className={cn(
-                                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                                is3DMode ? "bg-primary" : "bg-input"
-                            )}
-                        >
-                            <span className={cn(
-                                "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform",
-                                is3DMode ? "translate-x-5" : "translate-x-0"
-                            )} />
-                        </button>
                     </div>
-                    {is3DMode ? (
-                        <div className="w-full h-full min-h-[50vh] md:min-h-[600px]">
+                    
+                    <div className="w-full flex flex-col xl:flex-row gap-6 items-stretch justify-center h-full min-h-[50vh] md:min-h-[600px]">
+                        {/* Static SVG Bodymesh */}
+                        <div className="flex-1 w-full max-w-[300px] xl:max-w-none mx-auto shadow-2xl rounded-3xl overflow-hidden bg-card border border-primary/10 relative">
+                            <div className="absolute top-3 left-4 z-10 text-xs font-semibold text-muted-foreground">Morphing Mesh</div>
+                            <Avatar3D />
+                        </div>
+                        
+                        {/* Animated FBX Container */}
+                        <div className="flex-1 w-full max-w-[300px] xl:max-w-none mx-auto shadow-2xl rounded-3xl overflow-hidden bg-card border border-primary/10 relative">
+                            <div className="absolute top-3 left-4 z-10 text-xs font-semibold text-muted-foreground">Exercise Engine</div>
                             <FBXAnimationPlayer initialExerciseId="idle" hideList bmi={Number(bmi) || 22} />
                         </div>
-                    ) : (
-                        <Avatar3D />
-                    )}
+                    </div>
                 </motion.div>
             </main>
 
