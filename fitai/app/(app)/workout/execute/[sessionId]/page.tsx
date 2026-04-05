@@ -116,7 +116,7 @@ export default function WorkoutExecutionPage() {
                     
                     <div className="absolute inset-0 z-0">
                         {viewMode === '3d' ? (
-                            <FBXAnimationPlayer initialExerciseId={exercise.fbxId} hideList bmi={22} />
+                            <FBXAnimationPlayer initialExerciseId={exercise.fbxId} hideList weight={70} height={175} />
                         ) : (
                             <AnatomyMap muscle={exercise.muscle} className="h-full w-full" />
                         )}
