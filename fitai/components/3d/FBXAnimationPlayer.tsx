@@ -25,11 +25,11 @@ export const AVAILABLE_EXERCISES = [
 interface FBXAnimationPlayerProps {
     initialExerciseId?: string;
     hideList?: boolean; // If true, only shows this single animation without the list switcher
-    bmi?: number; // Optional BMI for body scaling
+    weight?: number; // Optional weight in kg for body scaling width
     height?: number; // Optional height in cm for vertical scaling
 }
 
-export function FBXAnimationPlayer({ initialExerciseId = "idle", hideList = false, bmi, height }: FBXAnimationPlayerProps) {
+export function FBXAnimationPlayer({ initialExerciseId = "idle", hideList = false, weight, height }: FBXAnimationPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(true);
     const [activeId, setActiveId] = useState(initialExerciseId);
     
@@ -46,8 +46,8 @@ export function FBXAnimationPlayer({ initialExerciseId = "idle", hideList = fals
                     url={`/models/${currentEx.file}`} 
                     isPlaying={isPlaying} 
                     tintColor={currentEx.color} 
-                    bmiScale={bmi ? bmi / 22 : 1}
-                    heightScale={height ? height / 175 : 1}
+                    weight={weight}
+                    height={height}
                 />
             </div>
 

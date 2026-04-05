@@ -9,11 +9,11 @@ interface FBXModelProps {
     url: string;
     isPlaying: boolean;
     tintColor?: string;
-    bmiScale?: number;
-    heightScale?: number;
+    weight?: number;
+    height?: number;
 }
 
-function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0, heightScale = 1.0 }: FBXModelProps) {
+function FBXModel({ url, isPlaying, tintColor, weight = 70, height = 175 }: FBXModelProps) {
     const fbx = useFBX(url);
     const mixerRef = useRef<THREE.AnimationMixer | null>(null);
 
@@ -90,9 +90,12 @@ function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0, heightScale = 1.0
         }
     });
 
-    const baseScale = 0.18;
-    const xzScale = baseScale * Math.min(Math.max(bmiScale, 0.7), 1.5);
-    const yScale = baseScale * heightScale;
+    const baseScale = 0.26;
+    const heightRatio = height / 175;
+    const bulk = Math.pow(weight / 70, 0.55);
+
+    const xzScale = baseScale * bulk;
+    const yScale = baseScale * heightRatio;
 
     // Anchor downwards to keep it centered when scaled up
     return (
@@ -102,7 +105,7 @@ function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0, heightScale = 1.0
     );
 }
 
-export function FBXViewer({ url, isPlaying, tintColor, bmiScale, heightScale }: FBXModelProps) {
+export function FBXViewer({ url, isPlaying, tintColor, weight, height }: FBXModelProps) {
     return (
         <div className="w-full h-full min-h-[400px] relative cursor-grab active:cursor-grabbing rounded-3xl overflow-hidden bg-gradient-to-b from-background to-primary/5 border border-primary/10">
             <Canvas shadows camera={{ position: [0, 2, 7], fov: 45 }}>
@@ -111,7 +114,7 @@ export function FBXViewer({ url, isPlaying, tintColor, bmiScale, heightScale }: 
                     <ambientLight intensity={0.6} />
                     <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
                     
-                    <FBXModel url={url} isPlaying={isPlaying} tintColor={tintColor} bmiScale={bmiScale} heightScale={heightScale} />
+                    <FBXModel url={url} isPlaying={isPlaying} tintColor={tintColor} weight={weight} height={height} />
                     
                     <OrbitControls 
                         enablePan={false} 
