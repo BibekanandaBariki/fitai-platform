@@ -3,17 +3,18 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { X, Info, Settings2, Play, Check, ChevronRight, PlayCircle } from "lucide-react";
+import { X, Info, Settings2, Play, Check, ChevronRight, PlayCircle, Box, Activity } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { AnatomyMap } from "@/components/onboarding/AnatomyMap";
+import { FBXAnimationPlayer } from "@/components/3d/FBXAnimationPlayer";
 
 // Mock Exercise Data
 // videoId = YouTube video ID for exercise tutorial embed
 const EXERCISES = [
-    { id: 1, name: "Barbell Bench Press", sets: 4, reps: "8-10", muscle: "Chest", rpe: 8, prevWeight: 60, videoId: "rT7DgCr-3pg", formTip: "Keep your feet flat on the floor, elbows at 45°. Lower the bar slowly to mid-chest, pause, then press explosively. Keep your core braced and scapula retracted throughout." },
-    { id: 2, name: "Incline Dumbbell Press", sets: 3, reps: "10-12", muscle: "Upper Chest", rpe: 8, prevWeight: 24, videoId: "8iPEnn-ltC8", formTip: "Set the bench to 30-45°. Control the descent slowly, let elbows track below shoulder level. Squeeze the upper chest at the top. Avoid flaring elbows too wide." },
-    { id: 3, name: "Cable Crossovers", sets: 3, reps: "12-15", muscle: "Lower Chest", rpe: 9, prevWeight: 15, videoId: "taI4XduLpTk", formTip: "Stand in the middle of the cable station, pull cables forward and down in an arc, meeting hands at the bottom. Fully stretch the chest at the top of each rep." },
+    { id: 1, name: "Barbell Bench Press", sets: 4, reps: "8-10", muscle: "Chest", rpe: 8, prevWeight: 60, videoId: "rT7DgCr-3pg", fbxId: "pushup", formTip: "Keep your feet flat on the floor, elbows at 45°. Lower the bar slowly to mid-chest, pause, then press explosively. Keep your core braced and scapula retracted throughout." },
+    { id: 2, name: "Incline Dumbbell Press", sets: 3, reps: "10-12", muscle: "Upper Chest", rpe: 8, prevWeight: 24, videoId: "8iPEnn-ltC8", fbxId: "lifting", formTip: "Set the bench to 30-45°. Control the descent slowly, let elbows track below shoulder level. Squeeze the upper chest at the top. Avoid flaring elbows too wide." },
+    { id: 3, name: "Cable Crossovers", sets: 3, reps: "12-15", muscle: "Lower Chest", rpe: 9, prevWeight: 15, videoId: "taI4XduLpTk", fbxId: "jumping-jacks", formTip: "Stand in the middle of the cable station, pull cables forward and down in an arc, meeting hands at the bottom. Fully stretch the chest at the top of each rep." },
 ];
 
 export default function WorkoutExecutionPage() {
@@ -23,6 +24,7 @@ export default function WorkoutExecutionPage() {
     const [weight, setWeight] = useState("");
     const [isResting, setIsResting] = useState(false);
     const [isVideoOpen, setIsVideoOpen] = useState(false);
+    const [viewMode, setViewMode] = useState<"anatomy" | "3d">("anatomy");
     const [restTimeLeft, setRestTimeLeft] = useState(90); // 90 seconds
     const [completedSets, setCompletedSets] = useState<any[]>([]);
 
@@ -93,30 +95,47 @@ export default function WorkoutExecutionPage() {
 
                 {/* 3D Viewer Placeholder (React Three Fiber canvas will go here) */}
                 <div className="relative h-2/5 min-h-[300px] w-full bg-secondary/20 flex flex-col items-center justify-center border-b overflow-hidden group">
-                    <div className="absolute top-4 right-4 flex gap-2 z-10">
-                        <Button size="icon" variant="secondary" className="rounded-full bg-background/50 backdrop-blur-md h-8 w-8">
-                            <Info className="h-4 w-4" />
+                    <div className="absolute top-4 right-4 flex gap-2 z-10 bg-background/50 backdrop-blur-md rounded-full p-1 border border-border/50">
+                        <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            className={cn("rounded-full h-8 w-8", viewMode === 'anatomy' ? "bg-primary text-primary-foreground" : "text-muted-foreground")}
+                            onClick={() => setViewMode('anatomy')}
+                        >
+                            <Activity className="h-4 w-4" />
                         </Button>
-                        <Button size="icon" variant="secondary" className="rounded-full bg-background/50 backdrop-blur-md h-8 w-8">
-                            <Settings2 className="h-4 w-4" />
+                        <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            className={cn("rounded-full h-8 w-8", viewMode === '3d' ? "bg-primary text-primary-foreground" : "text-muted-foreground")}
+                            onClick={() => setViewMode('3d')}
+                        >
+                            <Box className="h-4 w-4" />
                         </Button>
                     </div>
                     
                     <div className="absolute inset-0 z-0">
-                        <AnatomyMap muscle={exercise.muscle} className="h-full w-full" />
+                        {viewMode === '3d' ? (
+                            <FBXAnimationPlayer initialExerciseId={exercise.fbxId} hideList bmi={22} />
+                        ) : (
+                            <AnatomyMap muscle={exercise.muscle} className="h-full w-full" />
+                        )}
                     </div>
 
-                    {/* Massive Play Button Overlay */}
-                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                         <Button 
-                             size="lg" 
-                             className="rounded-full h-16 w-auto px-6 shadow-[0_0_40px_rgba(34,197,94,0);] hover:shadow-[0_0_40px_rgba(34,197,94,0.6)] backdrop-blur-md bg-background/80 border border-primary/50 text-primary group-hover:scale-110 transition-all font-bold"
-                             onClick={() => setIsVideoOpen(true)}
-                         >
-                             <PlayCircle className="h-6 w-6 mr-3" />
-                             Play Form Video
-                         </Button>
-                    </div>
+                    {/* Massive Play Button Overlay - Hide when in 3D mode because 3D has its own playback logic over the model */}
+                    {viewMode === 'anatomy' && (
+                        <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                             <Button 
+                                 size="lg" 
+                                 className="rounded-full h-16 w-auto px-6 shadow-[0_0_40px_rgba(34,197,94,0);] hover:shadow-[0_0_40px_rgba(34,197,94,0.6)] backdrop-blur-md bg-background/80 border border-primary/50 text-primary group-hover:scale-110 transition-all font-bold"
+                                 onClick={() => setIsVideoOpen(true)}
+                             >
+                                 <PlayCircle className="h-6 w-6 mr-3" />
+                                 Play Form Video
+                             </Button>
+                        </div>
+                    )}
+
 
                     {/* Real-time muscle activation overlay pill */}
                     <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-full border text-xs font-semibold flex items-center gap-2 shadow-xs z-10">
