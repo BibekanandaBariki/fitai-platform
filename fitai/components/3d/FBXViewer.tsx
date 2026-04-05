@@ -89,27 +89,31 @@ function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0 }: FBXModelProps) 
         }
     });
 
-    const bmiThickness = Math.min(Math.max(bmiScale, 0.7), 1.5);
-    return <primitive object={fbx} scale={[bmiThickness, 1, bmiThickness]} />;
+    const baseScale = 0.0125;
+    const xzScale = baseScale * Math.min(Math.max(bmiScale, 0.7), 1.5);
+    const yScale = baseScale;
+
+    // We manually anchor it slightly down (-1) so it fits neatly into the camera view
+    return <primitive object={fbx} scale={[xzScale, yScale, xzScale]} position={[0, -1, 0]} />;
 }
 
 export function FBXViewer({ url, isPlaying, tintColor, bmiScale }: FBXModelProps) {
     return (
         <div className="w-full h-full relative cursor-grab active:cursor-grabbing rounded-3xl overflow-hidden bg-gradient-to-b from-background to-primary/5 border border-primary/10">
-            <Canvas shadows camera={{ fov: 45 }}>
+            <Canvas shadows camera={{ position: [0, 1, 4], fov: 45 }}>
                 <React.Suspense fallback={null}>
                     <Environment preset="city" />
+                    <ambientLight intensity={0.6} />
+                    <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
                     
-                    {/* Stage automatically centers, scales, and adjusts the camera to perfectly fit any size FBX */}
-                    <Stage environment={null} intensity={0.5} adjustCamera={1.2}>
-                        <FBXModel url={url} isPlaying={isPlaying} tintColor={tintColor} bmiScale={bmiScale} />
-                    </Stage>
+                    <FBXModel url={url} isPlaying={isPlaying} tintColor={tintColor} bmiScale={bmiScale} />
                     
                     <OrbitControls 
                         enablePan={false} 
-                        minDistance={0.5} 
-                        maxDistance={15} 
-                        maxPolarAngle={Math.PI / 2 + 0.1} 
+                        minDistance={2} 
+                        maxDistance={8} 
+                        maxPolarAngle={Math.PI / 2} 
+                        target={[0, 0.5, 0]}
                         autoRotate={isPlaying}
                         autoRotateSpeed={0.5}
                     />
