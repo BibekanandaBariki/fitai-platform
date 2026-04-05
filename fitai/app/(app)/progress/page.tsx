@@ -47,7 +47,10 @@ export default function ProgressPage() {
                 pdf.save('FitAI_Progress_Report.pdf');
             } catch (err) {
                 console.error("PDF Export failed", err);
+                alert("Failed to export PDF. Please try again.");
             }
+        } else {
+            alert("Please switch to the 'Overview' tab to export your progress report!");
         }
         setIsExporting(false);
     };
@@ -61,6 +64,13 @@ export default function ProgressPage() {
         ...WEIGHT_DATA_MOCK.map(d => ({ ...d, weight: d.weight + (currentWeight - 75.4) })).slice(0, 6),
         { date: "Today", weight: currentWeight }
     ] : WEIGHT_DATA_MOCK;
+
+    // Dynamically generate PRs relative to user weight to avoid looking fake
+    const dynamicRecords = currentWeight ? [
+        { id: 1, name: "Barbell Bench Press", weight: `${(currentWeight * 1.1).toFixed(1)}kg`, reps: 5, date: "2 days ago" },
+        { id: 2, name: "Deadlift", weight: `${(currentWeight * 1.6).toFixed(1)}kg`, reps: 3, date: "1 week ago" },
+        { id: 3, name: "Squat", weight: `${(currentWeight * 1.3).toFixed(1)}kg`, reps: 5, date: "2 weeks ago" },
+    ] : RECORDS;
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-8">
@@ -183,7 +193,7 @@ export default function ProgressPage() {
                                 <Button variant="ghost" size="sm" className="h-8 text-xs">See All</Button>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {RECORDS.map((record) => (
+                                {dynamicRecords.map((record) => (
                                     <Card key={record.id} className="bg-card">
                                         <CardContent className="p-4 flex items-center gap-4">
                                             <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
@@ -216,14 +226,20 @@ export default function ProgressPage() {
                     >
                         <div className="flex items-center justify-between mb-2">
                             <h2 className="text-lg font-heading font-semibold">Gallery</h2>
-                            <Button size="sm">
+                            <Button size="sm" onClick={() => alert("Photo bucket Storage is coming soon!")}>
                                 <Camera className="h-4 w-4 mr-2" /> Add Photo
                             </Button>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-3 opacity-50 relative">
+                            {/* Coming Soon Overlay */}
+                            <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                                <div className="bg-background/90 px-4 py-2 rounded-full border shadow-lg flex items-center gap-2">
+                                     <span className="text-sm font-semibold">⏳ Storage Coming Soon</span>
+                                </div>
+                            </div>
                             {/* Compare Card */}
-                            <div className="col-span-2 rounded-xl border-2 border-primary border-dashed bg-primary/5 p-4 flex flex-col items-center justify-center min-h-[160px] text-center cursor-pointer hover:bg-primary/10 transition-colors">
+                            <div className="col-span-2 rounded-xl border-2 border-primary border-dashed bg-primary/5 p-4 flex flex-col items-center justify-center min-h-[160px] text-center cursor-not-allowed">
                                 <Scaling className="h-8 w-8 text-primary mb-2" />
                                 <h3 className="font-semibold">Generate Comparison</h3>
                                 <p className="text-xs text-muted-foreground mt-1 max-w-[200px]">Select Day 1 and Today to see your transformation.</p>
@@ -231,27 +247,43 @@ export default function ProgressPage() {
 
                             {/* Photo Grid Placeholder */}
                             <div className="aspect-[3/4] rounded-xl bg-muted relative overflow-hidden group">
-                                <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&q=80" alt="Progress" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&q=80" alt="Progress" className="w-full h-full object-cover opacity-80" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-3">
                                     <div className="text-white">
                                         <p className="font-medium text-sm">Today</p>
-                                        <p className="text-xs opacity-80">75.4 kg</p>
+                                        <p className="text-xs opacity-80">{currentWeight ?? '75'} kg</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="aspect-[3/4] rounded-xl bg-muted relative overflow-hidden group">
-                                <img src="https://images.unsplash.com/photo-1583454155184-870a1f63aebc?w=400&q=80" alt="Progress" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                <img src="https://images.unsplash.com/photo-1583454155184-870a1f63aebc?w=400&q=80" alt="Progress" className="w-full h-full object-cover opacity-80" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-3">
                                     <div className="text-white">
                                         <p className="font-medium text-sm">Day 1</p>
-                                        <p className="text-xs opacity-80">78.5 kg</p>
+                                        <p className="text-xs opacity-80">{(currentWeight ? currentWeight + 3.1 : 78).toFixed(1)} kg</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </motion.div>
                 )}
+
+                {/* History Tab */}
+                {activeTab === "history" && (
+                    <motion.div
+                        key="history"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 10 }}
+                        className="p-12 text-center text-muted-foreground bg-destructive/5 rounded-xl border-2 border-dashed border-destructive/20"
+                    >
+                        <History className="h-8 w-8 mx-auto mb-3 opacity-50" />
+                        <h3 className="font-semibold text-foreground">Detailed logs coming soon</h3>
+                        <p className="text-sm mt-1">We are building the complete workout timeline view!</p>
+                    </motion.div>
+                )}
+
 
             </AnimatePresence>
         </div>

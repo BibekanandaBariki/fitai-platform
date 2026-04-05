@@ -25,6 +25,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
     const [user, setUser]           = useState<any>(null);
     const [showRestart, setShowRestart] = useState(false);
+    
+    const { data: profileData } = trpc.profile.get.useQuery();
 
     const resetJourney = trpc.profile.reset.useMutation({
         onSuccess: () => {
@@ -53,10 +55,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         router.replace("/");
     };
 
-    const displayName = user?.user_metadata?.full_name?.split(" ")[0]
+    const displayName = profileData?.profile?.fullName?.split(" ")[0]
+        ?? user?.user_metadata?.full_name?.split(" ")[0]
         ?? user?.email?.split("@")[0]
         ?? "Athlete";
-    const avatar = user?.user_metadata?.avatar_url
+        
+    const avatar = profileData?.profile?.profilePhotoUrl 
+        ?? user?.user_metadata?.avatar_url
         ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayName}`;
 
     const isImmersiveScreen =

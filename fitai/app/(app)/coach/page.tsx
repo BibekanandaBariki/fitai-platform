@@ -110,7 +110,7 @@ export default function CoachPage() {
             )}
 
             {/* Input Area */}
-            <form onSubmit={handleSubmit} className="pt-2 flex items-end gap-2 relative">
+            <div className="pt-2 flex items-end gap-2 relative">
                 <Button type="button" variant="outline" size="icon" className="h-14 w-14 shrink-0 rounded-2xl border-input bg-card shadow-sm text-muted-foreground hover:text-primary">
                     <Camera className="h-6 w-6" />
                 </Button>
@@ -122,7 +122,8 @@ export default function CoachPage() {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
                                 if (input.trim() && !isLoading) {
-                                  handleSubmit(e);
+                                  append({ role: 'user', content: input.trim() });
+                                  setInput("");
                                 }
                             }
                         }}
@@ -132,9 +133,15 @@ export default function CoachPage() {
                         disabled={isLoading}
                     />
                     <Button
-                        type="submit"
+                        type="button"
                         size="icon"
                         disabled={!input?.trim() || isLoading}
+                        onClick={() => {
+                            if (input.trim() && !isLoading) {
+                                append({ role: 'user', content: input.trim() });
+                                setInput("");
+                            }
+                        }}
                         className={cn(
                             "absolute right-2 bottom-2 h-10 w-10 text-primary-foreground shadow-sm transition-all",
                             input?.trim() ? "bg-primary scale-100" : "bg-muted text-muted-foreground scale-90"
@@ -143,7 +150,7 @@ export default function CoachPage() {
                         <Send className="h-4 w-4" />
                     </Button>
                 </div>
-            </form>
+            </div>
 
         </div>
     );
