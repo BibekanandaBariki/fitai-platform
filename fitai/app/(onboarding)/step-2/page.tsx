@@ -313,7 +313,7 @@ export default function OnboardingStep2() {
                         {/* Animated FBX Container */}
                         <div className="flex-1 w-full max-w-[300px] xl:max-w-none mx-auto shadow-2xl rounded-3xl overflow-hidden bg-card border border-primary/10 relative">
                             <div className="absolute top-3 left-4 z-10 text-xs font-semibold text-muted-foreground">Exercise Engine</div>
-                            <FBXAnimationPlayer initialExerciseId="idle" hideList bmi={Number(bmi) || 22} />
+                            <FBXAnimationPlayer initialExerciseId="idle" hideList bmi={Number(bmi) || 22} height={height || 175} />
                         </div>
                     </div>
                 </motion.div>

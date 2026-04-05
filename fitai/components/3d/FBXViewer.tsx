@@ -10,9 +10,10 @@ interface FBXModelProps {
     isPlaying: boolean;
     tintColor?: string;
     bmiScale?: number;
+    heightScale?: number;
 }
 
-function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0 }: FBXModelProps) {
+function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0, heightScale = 1.0 }: FBXModelProps) {
     const fbx = useFBX(url);
     const mixerRef = useRef<THREE.AnimationMixer | null>(null);
 
@@ -91,7 +92,7 @@ function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0 }: FBXModelProps) 
 
     const baseScale = 0.08;
     const xzScale = baseScale * Math.min(Math.max(bmiScale, 0.7), 1.5);
-    const yScale = baseScale;
+    const yScale = baseScale * heightScale;
 
     // Anchor downwards to keep it centered when scaled up
     return (
@@ -101,7 +102,7 @@ function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0 }: FBXModelProps) 
     );
 }
 
-export function FBXViewer({ url, isPlaying, tintColor, bmiScale }: FBXModelProps) {
+export function FBXViewer({ url, isPlaying, tintColor, bmiScale, heightScale }: FBXModelProps) {
     return (
         <div className="w-full h-full min-h-[400px] relative cursor-grab active:cursor-grabbing rounded-3xl overflow-hidden bg-gradient-to-b from-background to-primary/5 border border-primary/10">
             <Canvas shadows camera={{ position: [0, 1.5, 5], fov: 45 }}>
@@ -110,7 +111,7 @@ export function FBXViewer({ url, isPlaying, tintColor, bmiScale }: FBXModelProps
                     <ambientLight intensity={0.6} />
                     <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
                     
-                    <FBXModel url={url} isPlaying={isPlaying} tintColor={tintColor} bmiScale={bmiScale} />
+                    <FBXModel url={url} isPlaying={isPlaying} tintColor={tintColor} bmiScale={bmiScale} heightScale={heightScale} />
                     
                     <OrbitControls 
                         enablePan={false} 
