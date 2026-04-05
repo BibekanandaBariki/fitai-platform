@@ -89,29 +89,27 @@ function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0 }: FBXModelProps) 
         }
     });
 
-    const baseScale = 0.01;
-    const xzScale = baseScale * Math.min(Math.max(bmiScale, 0.7), 1.5); // Clamp to prevent breaking mesh
-
-    return <primitive object={fbx} scale={[xzScale, baseScale, xzScale]} />;
+    const bmiThickness = Math.min(Math.max(bmiScale, 0.7), 1.5);
+    return <primitive object={fbx} scale={[bmiThickness, 1, bmiThickness]} />;
 }
 
 export function FBXViewer({ url, isPlaying, tintColor, bmiScale }: FBXModelProps) {
     return (
         <div className="w-full h-full relative cursor-grab active:cursor-grabbing rounded-3xl overflow-hidden bg-gradient-to-b from-background to-primary/5 border border-primary/10">
-            <Canvas shadows camera={{ position: [0, 1.5, 4], fov: 45 }}>
+            <Canvas shadows camera={{ fov: 45 }}>
                 <React.Suspense fallback={null}>
                     <Environment preset="city" />
                     
-                    <Stage environment={null} intensity={0.5} adjustCamera={false}>
+                    {/* Stage automatically centers, scales, and adjusts the camera to perfectly fit any size FBX */}
+                    <Stage environment={null} intensity={0.5} adjustCamera={1.2}>
                         <FBXModel url={url} isPlaying={isPlaying} tintColor={tintColor} bmiScale={bmiScale} />
                     </Stage>
                     
                     <OrbitControls 
                         enablePan={false} 
-                        minDistance={1.5} 
-                        maxDistance={6} 
+                        minDistance={0.5} 
+                        maxDistance={15} 
                         maxPolarAngle={Math.PI / 2 + 0.1} 
-                        target={[0, 1, 0]}
                         autoRotate={isPlaying}
                         autoRotateSpeed={0.5}
                     />
