@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Activity, Brain, Target, ShieldCheck } from "lucide-react";
+import { ArrowRight, Brain, Target, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -12,7 +13,9 @@ export default function Home() {
       <nav className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <Activity className="h-6 w-6 text-primary" />
+            <div className="bg-black/60 p-1 rounded-lg border border-primary/20">
+              <Image src="/bb_fitness_logo.png" alt="BB Fitness" width={28} height={28} className="object-contain" />
+            </div>
             <span className="font-heading text-xl font-bold tracking-tight">FitAI</span>
           </div>
           <div className="flex items-center gap-4">

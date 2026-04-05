@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Camera, X, Check, Box } from "lucide-react";
 import { Avatar3D } from "@/components/onboarding/Avatar3D";
 import { FBXAnimationPlayer } from "@/components/3d/FBXAnimationPlayer";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const GENDERS = [
@@ -24,7 +24,39 @@ export default function OnboardingStep2() {
     const [is3DMode, setIs3DMode] = useState(false);
     const fileRef = useRef<HTMLInputElement>(null);
 
+    const [heightUnit, setHeightUnit] = useState<"cm" | "ft">("cm");
+    const [weightUnit, setWeightUnit] = useState<"kg" | "lbs">("kg");
+
     const bmi = height && weight ? (weight / Math.pow(height / 100, 2)).toFixed(1) : null;
+
+    useEffect(() => {
+        if (height && !targetWeight) {
+            const idealWeight = Math.round(22 * Math.pow(height / 100, 2));
+            updateData({ targetWeight: idealWeight });
+        }
+    }, [height, targetWeight, updateData]);
+
+    const toDisplayHeight = (cm: number | null) => {
+        if (!cm) return "";
+        return heightUnit === 'cm' ? cm : Number((cm / 30.48).toFixed(1));
+    };
+
+    const toDisplayWeight = (kg: number | null) => {
+        if (!kg) return "";
+        return weightUnit === 'kg' ? kg : Math.round(kg * 2.20462);
+    };
+
+    const handleHeightChange = (valStr: string) => {
+        const val = parseFloat(valStr);
+        if (isNaN(val)) return updateData({ height: null });
+        updateData({ height: heightUnit === 'ft' ? Math.round(val * 30.48) : val });
+    };
+
+    const handleWeightChange = (valStr: string, field: 'weight' | 'targetWeight') => {
+        const val = parseFloat(valStr);
+        if (isNaN(val)) return updateData({ [field]: null });
+        updateData({ [field]: weightUnit === 'lbs' ? Math.round(val / 2.20462) : val });
+    };
 
     const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -98,68 +130,95 @@ export default function OnboardingStep2() {
 
                         {/* Height Input */}
                         <div>
-                            <label className="text-sm font-medium mb-3 block">How tall are you?</label>
+                            <div className="flex justify-between items-center mb-3">
+                                <label className="text-sm font-medium">How tall are you?</label>
+                                <div className="flex bg-muted rounded-full p-1">
+                                    <button 
+                                        onClick={() => setHeightUnit('cm')}
+                                        className={cn("px-3 py-1 text-xs font-medium rounded-full transition-colors", heightUnit === 'cm' ? "bg-background shadow-[0_1px_3px_rgba(0,0,0,0.1)] text-foreground" : "text-muted-foreground hover:text-foreground")}
+                                    >cm</button>
+                                    <button 
+                                        onClick={() => setHeightUnit('ft')}
+                                        className={cn("px-3 py-1 text-xs font-medium rounded-full transition-colors", heightUnit === 'ft' ? "bg-background shadow-[0_1px_3px_rgba(0,0,0,0.1)] text-foreground" : "text-muted-foreground hover:text-foreground")}
+                                    >ft</button>
+                                </div>
+                            </div>
                             <div className="flex items-center gap-4 mb-4">
                                 <input
                                     type="number"
-                                    placeholder="175"
-                                    value={height || ""}
-                                    onChange={(e) => updateData({ height: Number(e.target.value) })}
-                                    className="flex-1 max-w-40 h-16 text-3xl font-heading font-bold text-center rounded-xl border-2 border-input bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary/50"
-                                    min="100"
-                                    max="250"
+                                    placeholder={heightUnit === 'cm' ? "175" : "5.7"}
+                                    value={toDisplayHeight(height) || ""}
+                                    onChange={(e) => handleHeightChange(e.target.value)}
+                                    className="flex-1 max-w-40 h-16 text-3xl font-heading font-bold text-center rounded-xl border-2 border-input bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary/50"
+                                    min={heightUnit === 'cm' ? "100" : "3.3"}
+                                    max={heightUnit === 'cm' ? "250" : "8.2"}
+                                    step={heightUnit === 'cm' ? "1" : "0.1"}
                                 />
-                                <span className="text-2xl font-semibold text-muted-foreground">cm</span>
+                                <span className="text-2xl font-semibold text-muted-foreground">{heightUnit}</span>
                             </div>
                             <input
                                 type="range"
-                                min="100" max="250"
-                                step="1"
-                                value={height || 175}
-                                onChange={(e) => updateData({ height: Number(e.target.value) })}
+                                min={heightUnit === 'cm' ? "100" : "3.3"}
+                                max={heightUnit === 'cm' ? "250" : "8.2"}
+                                step={heightUnit === 'cm' ? "1" : "0.1"}
+                                value={toDisplayHeight(height) || (heightUnit === 'cm' ? 175 : 5.7)}
+                                onChange={(e) => handleHeightChange(e.target.value)}
                                 className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                             />
                         </div>
 
                         {/* Current Weight Input */}
                         <div>
-                            <label className="text-sm font-medium mb-3 block">Current weight</label>
+                            <div className="flex justify-between items-center mb-3">
+                                <label className="text-sm font-medium">Current weight</label>
+                                <div className="flex bg-muted rounded-full p-1">
+                                    <button 
+                                        onClick={() => setWeightUnit('kg')}
+                                        className={cn("px-3 py-1 text-xs font-medium rounded-full transition-colors", weightUnit === 'kg' ? "bg-background shadow-[0_1px_3px_rgba(0,0,0,0.1)] text-foreground" : "text-muted-foreground hover:text-foreground")}
+                                    >kg</button>
+                                    <button 
+                                        onClick={() => setWeightUnit('lbs')}
+                                        className={cn("px-3 py-1 text-xs font-medium rounded-full transition-colors", weightUnit === 'lbs' ? "bg-background shadow-[0_1px_3px_rgba(0,0,0,0.1)] text-foreground" : "text-muted-foreground hover:text-foreground")}
+                                    >lbs</button>
+                                </div>
+                            </div>
                             <div className="flex items-center gap-4 mb-4">
                                 <input
                                     type="number"
-                                    placeholder="70"
-                                    value={weight || ""}
-                                    onChange={(e) => updateData({ weight: Number(e.target.value) })}
-                                    className="flex-1 max-w-40 h-16 text-3xl font-heading font-bold text-center rounded-xl border-2 border-input bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary/50"
-                                    min="30"
-                                    max="250"
+                                    placeholder={weightUnit === 'kg' ? "70" : "154"}
+                                    value={toDisplayWeight(weight) || ""}
+                                    onChange={(e) => handleWeightChange(e.target.value, 'weight')}
+                                    className="flex-1 max-w-40 h-16 text-3xl font-heading font-bold text-center rounded-xl border-2 border-input bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary/50"
+                                    min={weightUnit === 'kg' ? "30" : "66"}
+                                    max={weightUnit === 'kg' ? "250" : "550"}
                                 />
-                                <span className="text-2xl font-semibold text-muted-foreground">kg</span>
+                                <span className="text-2xl font-semibold text-muted-foreground">{weightUnit}</span>
                             </div>
                             <input
                                 type="range"
-                                min="30" max="250"
+                                min={weightUnit === 'kg' ? "30" : "66"}
+                                max={weightUnit === 'kg' ? "250" : "550"}
                                 step="1"
-                                value={weight || 70}
-                                onChange={(e) => updateData({ weight: Number(e.target.value) })}
+                                value={toDisplayWeight(weight) || (weightUnit === 'kg' ? 70 : 154)}
+                                onChange={(e) => handleWeightChange(e.target.value, 'weight')}
                                 className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                             />
                         </div>
 
                         {/* Target Weight Input */}
                         <div>
-                            <label className="text-sm font-medium mb-3 block">Target weight</label>
+                            <label className="text-sm font-medium mb-3 block">Target weight (Suggested based on optimal BMI)</label>
                             <div className="flex items-center gap-4">
                                 <input
                                     type="number"
-                                    placeholder="65"
-                                    value={targetWeight || ""}
-                                    onChange={(e) => updateData({ targetWeight: Number(e.target.value) })}
-                                    className="flex-1 max-w-40 h-16 text-3xl font-heading font-bold text-center rounded-xl border-2 border-primary/50 text-primary bg-primary/5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
-                                    min="20"
-                                    max="400"
+                                    placeholder={weightUnit === 'kg' ? "65" : "143"}
+                                    value={toDisplayWeight(targetWeight) || ""}
+                                    onChange={(e) => handleWeightChange(e.target.value, 'targetWeight')}
+                                    className="flex-1 max-w-40 h-16 text-3xl font-heading font-bold text-center rounded-xl border-2 border-primary/50 text-primary bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                    min={weightUnit === 'kg' ? "20" : "44"}
+                                    max={weightUnit === 'kg' ? "400" : "880"}
                                 />
-                                <span className="text-2xl font-semibold text-primary/80">kg</span>
+                                <span className="text-2xl font-semibold text-primary/80">{weightUnit}</span>
                             </div>
 
                             {weight && targetWeight && weight !== targetWeight && (

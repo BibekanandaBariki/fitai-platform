@@ -24,6 +24,14 @@ export const metadata: Metadata = {
   title: "FitAI — India's #1 AI Personal Trainer & Fitness Coach",
   description: "Transform your body with personalized AI workout plans, meal tracking, and real-time coaching. Free to start. 500,000+ Indians already transforming.",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/bb_fitness_logo.png", sizes: "32x32", type: "image/png" },
+      { url: "/bb_fitness_logo.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/bb_fitness_logo.png",
+    shortcut: "/bb_fitness_logo.png",
+  },
 };
 
 import { TRPCProvider } from "@/lib/trpc/Provider";

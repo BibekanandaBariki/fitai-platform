@@ -89,12 +89,12 @@ function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0 }: FBXModelProps) 
         }
     });
 
-    const baseScale = 0.0125;
+    const baseScale = 0.035;
     const xzScale = baseScale * Math.min(Math.max(bmiScale, 0.7), 1.5);
     const yScale = baseScale;
 
-    // We manually anchor it slightly down (-1) so it fits neatly into the camera view
-    return <primitive object={fbx} scale={[xzScale, yScale, xzScale]} position={[0, -1, 0]} />;
+    // Anchor downwards to keep it centered when scaled up
+    return <primitive object={fbx} scale={[xzScale, yScale, xzScale]} position={[0, -1.8, 0]} />;
 }
 
 export function FBXViewer({ url, isPlaying, tintColor, bmiScale }: FBXModelProps) {

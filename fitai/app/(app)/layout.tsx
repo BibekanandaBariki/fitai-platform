@@ -74,10 +74,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Desktop Sidebar */}
             <aside className="hidden md:flex flex-col w-64 border-r bg-card h-screen sticky top-0 px-4 py-6">
                 <Link href="/dashboard" className="flex items-center gap-2 px-2 mb-10 group">
-                    <div className="bg-primary/20 p-1.5 rounded-lg">
-                        <svg className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                        </svg>
+                    <div className="bg-black/50 p-1 rounded-lg backdrop-blur-sm border border-primary/20">
+                        <img src="/bb_fitness_logo.png" alt="BB Fitness" className="h-7 w-7 object-contain group-hover:scale-110 transition-transform" />
                     </div>
                     <span className="font-heading text-2xl font-bold tracking-tight">FitAI</span>
                 </Link>

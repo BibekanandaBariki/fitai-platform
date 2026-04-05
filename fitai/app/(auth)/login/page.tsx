@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Activity, Mail, Smartphone, ArrowRight, Loader2, Fingerprint } from "lucide-react";
+import { Mail, Smartphone, ArrowRight, Loader2, Fingerprint } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
     const [authMethod, setAuthMethod] = useState<"options" | "phone" | "email">("options");
@@ -59,7 +60,9 @@ export default function LoginPage() {
             <div className="absolute bottom-[-20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-accent/10 blur-[120px] -z-10" />
 
             <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 group">
-                <Activity className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" />
+                <div className="bg-black/60 p-1 rounded-lg border border-primary/20">
+                    <Image src="/bb_fitness_logo.png" alt="BB Fitness" width={26} height={26} className="object-contain group-hover:scale-110 transition-transform" />
+                </div>
                 <span className="font-heading text-xl font-bold tracking-tight">FitAI</span>
             </Link>
 

@@ -3,7 +3,8 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Check, Smartphone, Activity } from "lucide-react";
+import { ArrowLeft, Check, Smartphone, Heart } from "lucide-react";
+import Image from "next/image";
 import confetti from "canvas-confetti";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc/client";
@@ -122,7 +123,7 @@ export default function OnboardingStep7() {
                             <div className="flex items-center justify-between p-4 border rounded-xl bg-card">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
-                                        <Activity className="text-red-500 h-6 w-6" />
+                                        <Heart className="text-red-500 h-6 w-6 fill-red-500" />
                                     </div>
                                     <div>
                                         <h3 className="font-semibold">Apple Health</h3>
@@ -174,7 +175,7 @@ export default function OnboardingStep7() {
                                 <circle cx="50" cy="50" r="45" fill="none" strokeWidth="4" stroke="currentColor" strokeDasharray="70 200" className="text-primary" strokeLinecap="round" />
                             </svg>
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <Activity className="h-10 w-10 text-primary animate-pulse" />
+                                <Image src="/bb_fitness_logo.png" alt="BB Fitness" width={48} height={48} className="object-contain animate-pulse" />
                             </div>
                         </div>
 
