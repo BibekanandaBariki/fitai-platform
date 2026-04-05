@@ -29,12 +29,14 @@ export default function OnboardingStep2() {
 
     const bmi = height && weight ? (weight / Math.pow(height / 100, 2)).toFixed(1) : null;
 
+    const [userEditedTarget, setUserEditedTarget] = useState(false);
+
     useEffect(() => {
-        if (height && !targetWeight) {
+        if (height && !userEditedTarget) {
             const idealWeight = Math.round(22 * Math.pow(height / 100, 2));
             updateData({ targetWeight: idealWeight });
         }
-    }, [height, targetWeight, updateData]);
+    }, [height, userEditedTarget, updateData]);
 
     const toDisplayHeight = (cm: number | null) => {
         if (!cm) return "";
@@ -54,6 +56,7 @@ export default function OnboardingStep2() {
 
     const handleWeightChange = (valStr: string, field: 'weight' | 'targetWeight') => {
         const val = parseFloat(valStr);
+        if (field === 'targetWeight') setUserEditedTarget(true);
         if (isNaN(val)) return updateData({ [field]: null });
         updateData({ [field]: weightUnit === 'lbs' ? Math.round(val / 2.20462) : val });
     };

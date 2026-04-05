@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useFBX, OrbitControls, Environment, Stage } from "@react-three/drei";
+import { useFBX, OrbitControls, Environment, Center } from "@react-three/drei";
 import * as THREE from "three";
 
 interface FBXModelProps {
@@ -89,18 +89,22 @@ function FBXModel({ url, isPlaying, tintColor, bmiScale = 1.0 }: FBXModelProps) 
         }
     });
 
-    const baseScale = 0.035;
+    const baseScale = 0.08;
     const xzScale = baseScale * Math.min(Math.max(bmiScale, 0.7), 1.5);
     const yScale = baseScale;
 
     // Anchor downwards to keep it centered when scaled up
-    return <primitive object={fbx} scale={[xzScale, yScale, xzScale]} position={[0, -1.8, 0]} />;
+    return (
+        <Center position={[0, -0.5, 0]}>
+            <primitive object={fbx} scale={[xzScale, yScale, xzScale]} />
+        </Center>
+    );
 }
 
 export function FBXViewer({ url, isPlaying, tintColor, bmiScale }: FBXModelProps) {
     return (
-        <div className="w-full h-full relative cursor-grab active:cursor-grabbing rounded-3xl overflow-hidden bg-gradient-to-b from-background to-primary/5 border border-primary/10">
-            <Canvas shadows camera={{ position: [0, 1, 4], fov: 45 }}>
+        <div className="w-full h-full min-h-[400px] relative cursor-grab active:cursor-grabbing rounded-3xl overflow-hidden bg-gradient-to-b from-background to-primary/5 border border-primary/10">
+            <Canvas shadows camera={{ position: [0, 1.5, 5], fov: 45 }}>
                 <React.Suspense fallback={null}>
                     <Environment preset="city" />
                     <ambientLight intensity={0.6} />
